@@ -1,0 +1,11 @@
+/dist/
+/build/
+/bin/
+/out/
+/nbproject/private/
+/.project
+/.classpath
+/.idea/
+.idea/
+cst.iml
+**/.DS_Store
