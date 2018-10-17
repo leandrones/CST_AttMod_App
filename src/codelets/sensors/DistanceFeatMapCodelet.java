@@ -90,21 +90,24 @@ public class DistanceFeatMapCodelet extends FeatMapCodelet {
 
 //            System.out.println("LASER DATA SIZE "+laserData.size());
 
+        double mean_function_value = 0;
+        
+        Float Fvalue;
+            
+        //Paper notation CONFUSIOOOOON!!!!
+
+        for (int k = 0; k < laserData.size(); k++) {
+            Fvalue = (Float) laserData.get(k);
+            mean_function_value += Fvalue.doubleValue();
+        }
+        
+        mean_function_value /= laserData.size();
+
         for (int j = 0; j < laserData.size(); j++) {
             double function_value;
-            function_value = 0;
-
-            Float Fvalue;
-            
-            //Paper notation CONFUSIOOOOON!!!!
-
-            for (int k = 0; k < j; k++) {
-                Fvalue = (Float) laserData.get(k);
-                function_value += Fvalue.doubleValue();
-            }
+           
             Fvalue = (Float) laserData.get(j);
-            function_value /= j+1;
-            function_value = abs((Fvalue.doubleValue() - function_value)) / mr;
+            function_value = abs((Fvalue.doubleValue() - mean_function_value)) / mr;
 
             distFM_t.set(j, new Float(function_value));
 
