@@ -95,6 +95,8 @@ public class DistanceFeatMapCodelet extends FeatMapCodelet {
             function_value = 0;
 
             Float Fvalue;
+            
+            //Paper notation CONFUSIOOOOON!!!!
 
             for (int k = 0; k < j; k++) {
                 Fvalue = (Float) laserData.get(k);
