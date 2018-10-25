@@ -49,7 +49,7 @@ public class SonarVrep implements SensorI{
         
         try {
             Thread.sleep(50);
-//            System.out.println("\u001B[31m"+"TRY CATCH");
+//            // System.out.println("\u001B[31m"+"TRY CATCH");
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
@@ -74,7 +74,7 @@ public class SonarVrep implements SensorI{
             }
                 
         }
-        System.out.println("\u001B[36m"+"sonar data\n"+sonarData.sonar_readings);
+        // System.out.println("\u001B[36m"+"sonar data\n"+sonarData.sonar_readings);
         
         printToFile(sonarData.sonar_readings);
         

@@ -14,6 +14,9 @@ package cst_attmod_app;
 
 import outsideCommunication.OutsideCommunication;
 
+import java.io.File;
+
+
 /**
  *
  * @author leandro
@@ -24,9 +27,17 @@ public class CST_AttMod_App {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+    	File folder = new File(".");
+    	for (File f : folder.listFiles()) {
+    		if(f.getName().endsWith(".txt")) {
+    			f.delete();
+    		}
+    	}
         OutsideCommunication oc = new OutsideCommunication();
         oc.start();
         AgentMind am = new AgentMind(oc);
+       
+
         
         
     }

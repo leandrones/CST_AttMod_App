@@ -34,7 +34,7 @@ public class OutsideCommunication {
     }
     
     public void start(){
-        System.out.println("Program started");
+        // System.out.println("Program started");
         vrep = new remoteApi();
         vrep.simxFinish(-1); // just in case, close all opened connections
         int clientID = vrep.simxStart("127.0.0.1",25000,true,true,5000,5);
@@ -44,7 +44,7 @@ public class OutsideCommunication {
             System.exit(1);
         }
         
-        System.out.println("Connected to vrep");
+        // System.out.println("Connected to vrep");
         
         try {
             Thread.sleep(1000);
@@ -68,6 +68,7 @@ public class OutsideCommunication {
         right_motor = new MotorVrep(vrep, clientID, right_motor_h.getValue());
         left_motor = new MotorVrep(vrep, clientID, left_motor_h.getValue());
 
+
         //////////////////////////////////////////////////////////////////
         // Sonars
         //////////////////////////////////////////////////////////////////
@@ -77,7 +78,7 @@ public class OutsideCommunication {
             String proximity_sensors_name = "Pioneer_p3dx_ultrasonicSensor"+ i;
             sonar_handles[i-1] = new IntW(-1);
 
-            //System.out.println(proximity_sensors_name);
+            //// System.out.println(proximity_sensors_name);
 
             vrep.simxGetObjectHandle(clientID,proximity_sensors_name, sonar_handles[i-1],remoteApi.simx_opmode_blocking);
             if(sonar_handles[i-1].getValue() == -1)
@@ -101,7 +102,7 @@ public class OutsideCommunication {
         for(int i = 0; i< 16; i++){
             int ret = vrep.simxReadProximitySensor(clientID,sonar_handles[i].getValue(),null,null,null,null,remoteApi.simx_opmode_streaming);
             if(ret == 1){
-                System.out.println("init ok i = "+i);
+                // System.out.println("init ok i = "+i);
             }
             else {
                 System.exit(1);
@@ -114,6 +115,8 @@ public class OutsideCommunication {
         vrep.simxGetStringSignal(clientID, "LaserSignal", signal_laser_value, remoteApi.simx_opmode_streaming);
         
         laser = new LaserVrep(clientID, signal_laser_value, vrep);
+        
+       
         
     }
 }

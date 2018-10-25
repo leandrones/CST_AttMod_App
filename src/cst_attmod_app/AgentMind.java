@@ -12,9 +12,12 @@
  
 package cst_attmod_app;
 
-import br.unicamp.cst.attention.DecisionMakingCodelet;
-import br.unicamp.cst.attention.SaliencyMapCodelet;
-import br.unicamp.cst.attention.Winner;
+//import br.unicamp.cst.attention.DecisionMakingCodelet;
+//import br.unicamp.cst.attention.SaliencyMapCodelet;
+//import br.unicamp.cst.attention.Winner;
+import attention.DecisionMakingCodelet;
+import attention.SaliencyMapCodelet;
+import attention.Winner;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
@@ -31,6 +34,8 @@ import java.util.Collections;
 import java.util.List;
 import outsideCommunication.OutsideCommunication;
 import outsideCommunication.SonarData;
+import codelets.learner.LearnerCodelet;
+
 
 /**
  *
@@ -197,7 +202,7 @@ public class AgentMind extends Mind {
         sensbuff_names.add("SONAR_BUFFER");
         sensbuff_names.add("LASER_BUFFER");
         
-//        System.out.println("size sens buff name "+sensbuff_name.size());
+//        // System.out.println("size sens buff name "+sensbuff_name.size());
         
         Codelet direction_fm_c = new DirectionFeatMapCodelet(sensbuff_names.size(), sensbuff_names, "DIRECTION_FM",buffersize,sonardimension);
         direction_fm_c.addInput(sonar_bufferMO);
@@ -209,7 +214,7 @@ public class AgentMind extends Mind {
         ArrayList<String> sensbuff_names_dist = new ArrayList<>();
         sensbuff_names_dist.add("LASER_BUFFER");
         
-//        System.out.println("size sens buff name "+sensbuff_names.size());
+//        // System.out.println("size sens buff name "+sensbuff_names.size());
         
         Codelet dist_fm_c = new DistanceFeatMapCodelet(sensbuff_names_dist.size(), sensbuff_names_dist, "DISTANCE_FM",buffersize,laserdimension);
         dist_fm_c.addInput(laser_bufferMO);
@@ -241,9 +246,15 @@ public class AgentMind extends Mind {
         dec_mak_cod.addOutput(attMapMO);
         insertCodelet(dec_mak_cod);
         
+        Codelet learner_cod = new LearnerCodelet("WINNERS", "SALIENCY_MAP", buffersize, sonardimension);
+        learner_cod.addInput(salMapMO);
+        learner_cod.addInput(winnersMO);
+        insertCodelet(learner_cod);
+
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////
         
+        // NOTE Sets the time interval between the readings
         // sets a time step for running the codelets to avoid heating too much your machine
         for (Codelet c : this.getCodeRack().getAllCodelets())
             c.setTimeStep(200);

@@ -42,7 +42,7 @@ public class LaserCodelet extends Codelet {
     public void proc() {
         laser_read.setI(laser.getData());
         
-        //System.out.println("laser read: "+laser_read.toString());
+        //// System.out.println("laser read: "+laser_read.toString());
     }
     
 }
