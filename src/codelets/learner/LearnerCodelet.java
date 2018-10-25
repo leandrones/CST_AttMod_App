@@ -39,11 +39,20 @@ public class LearnerCodelet extends Codelet
 		super();
 		
 		actionsList  = new ArrayList<>(Arrays.asList("Go to Winner", "Do nothing", "Turn to Winner"));
+		// States are 0 1 2 ... 5^8-1
 		statesList = new ArrayList<>(Arrays.asList(IntStream.rangeClosed(0, (int)Math.pow(5, 8)-1).mapToObj(String::valueOf).toArray(String[]::new)));
 		// QLearning initialization
 		ql = new QLearning();
 		ql.setActionsList(actionsList);
-		ql.setStatesList(statesList);
+
+		// Initialize QTable to 0
+		for (int i=0; i < statesList.size(); i ++) {
+			for (int j=0; j < actionsList.size(); j++) {
+				ql.setQ(0, statesList.get(i), actionsList.get(j));
+			
+			}
+		}
+		//ql.printQ();
 		
 		salMapName = salMName;
 		winnersListName = winnersLName;
@@ -81,46 +90,50 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void proc() {
 		
+		// Updates QTable with the reward of that state (?) -> how to update without action? must keep record of action taken in the iteration before
+		//
 		
 		// Converting salMap to discrete value
-		
-		//for (int t=0; t < saliencyMap.size(); t++) {
-			if (saliencyMap.size() != 0) {
-				// Transform each feature into a value between 0 and 4
-				ArrayList<Float> lastLine;
-				// Getting just the last entry
-				lastLine = (ArrayList<Float>) saliencyMap.get(saliencyMap.size() -1);
+		int salMapState = 0;
+		if (saliencyMap.size() != 0) {
+			
+			// Transform each feature into a value between 0 and 4
+			ArrayList<Float> lastLine;
+			// Getting just the last entry
+			lastLine = (ArrayList<Float>) saliencyMap.get(saliencyMap.size() -1);
+			
+			int salMapDiscrete = 0;
+			for (int i=0; i < sensorDimension; i++) {
 				
-				ArrayList<Integer> salMapDiscrete = new ArrayList<Integer>() ;
-				for (int i=0; i < sensorDimension; i++) {
-					
-					if (lastLine.get(i) < -2) {
-						salMapDiscrete.add(0);
-					}
-					else if (lastLine.get(i) < -1) {
-						salMapDiscrete.add(1);
-					}
-					else if (lastLine.get(i) < 0) {
-						salMapDiscrete.add(2);
-					}
-					else if (lastLine.get(i) < 1) {
-						salMapDiscrete.add(3);
-					}
-					else if (lastLine.get(i) < 2) {
-						salMapDiscrete.add(4);
-					}
-					
+				if (lastLine.get(i) < -2) {
+					salMapDiscrete = 0;
 				}
-				System.out.println("LEARNER "+salMapDiscrete);
-				
-				// Getting state from discrete values
-				int salMapState = 0;
-				for (int i = 0; i < sensorDimension; i++) {
-					salMapState += (int) Math.pow(5, i)*salMapDiscrete.get(i);
+				else if (lastLine.get(i) < -1) {
+					salMapDiscrete = 1;
 				}
-				System.out.println("STATE "+salMapState);
+				else if (lastLine.get(i) < 0) {
+					salMapDiscrete = 2;
+				}
+				else if (lastLine.get(i) < 1) {
+					salMapDiscrete = 3;
+				}
+				else if (lastLine.get(i) < 2) {
+					salMapDiscrete = 4;
+				}
 				
-			//}
+				// Getting state from discrete value
+				salMapState += (int) Math.pow(5, i)*salMapDiscrete;
+				
+			}
+			String salMapStateStr = Integer.toString(salMapState);
+			System.out.println("STATE "+salMapState);
+			
+			// Selects new best action to take
+			String actionToTake = ql.getAction(salMapStateStr);
+			
+			// Apply action
+			
+			
 		}
 		
 		
