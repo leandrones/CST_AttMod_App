@@ -69,6 +69,11 @@ public class AgentMind extends Mind {
         motorMOs.add(left_motor_speed);
         motorMOs.add(right_motor_speed);
         
+        //Motors
+        Codelet motors = new MotorCodelet(oc.right_motor, oc.left_motor);
+        motors.addInputs(motorMOs);
+        insertCodelet(motors);
+        
         //Sensors
         //Sonars
         SonarData sonarData = new SonarData();
@@ -154,6 +159,7 @@ public class AgentMind extends Mind {
         MemoryObject attMapMO = createMemoryObject("ATTENTIONAL_MAP",att_mapList);
         
         //WINNERS
+        
         List winnersList = Collections.synchronizedList(new ArrayList<Winner>());
         MemoryObject winnersMO = createMemoryObject("WINNERS",winnersList);
         
@@ -161,17 +167,22 @@ public class AgentMind extends Mind {
         
         List saliencyMap = Collections.synchronizedList(new ArrayList<ArrayList<Float>>());
         MemoryObject salMapMO = createMemoryObject("SALIENCY_MAP", saliencyMap);
-              
+        
+        //ACTIONS 
+        
+        List actionsList = Collections.synchronizedList(new ArrayList<String>());
+        MemoryObject actionsMO = createMemoryObject("ACTIONS", actionsList);
+        
+        //STATES 
+        
+        List statesList = Collections.synchronizedList(new ArrayList<String>());
+        MemoryObject statesMO = createMemoryObject("STATES", statesList);
         
         
         ////////////////////////////////////////////
         //Codelets
         ////////////////////////////////////////////
         
-        //Motors
-        Codelet motors = new MotorCodelet(oc.right_motor, oc.left_motor);
-        motors.addInputs(motorMOs);
-        insertCodelet(motors);
         
         //Sensors
         Codelet sonars = new SonarCodelet(oc.sonar);
@@ -246,10 +257,15 @@ public class AgentMind extends Mind {
         dec_mak_cod.addOutput(attMapMO);
         insertCodelet(dec_mak_cod);
         
-        Codelet learner_cod = new LearnerCodelet("WINNERS", "SALIENCY_MAP", buffersize, sonardimension);
+        Codelet learner_cod = new LearnerCodelet("WINNERS", "SALIENCY_MAP", "DISTANCE_FM", "L_M_SPEED", "R_M_SPEED", "ACTIONS", "STATES", buffersize, sonardimension);
         learner_cod.addInput(salMapMO);
         learner_cod.addInput(winnersMO);
+        learner_cod.addInput(dist_fmMO);
+        learner_cod.addOutputs(motorMOs);
+        learner_cod.addOutput(actionsMO);
+        learner_cod.addOutput(statesMO);
         insertCodelet(learner_cod);
+        
 
         ///////////////////////////////////////////////////////////////
         ///////////////////////////////////////////////////////////////

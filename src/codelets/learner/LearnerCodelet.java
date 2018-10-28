@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import attention.Winner;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
@@ -22,33 +23,45 @@ import br.unicamp.cst.learning.QLearning;
 public class LearnerCodelet extends Codelet 
 {
 	private QLearning ql;
-	private ArrayList<String> actionsList;
-	private ArrayList<String> statesList;
     private String salMapName;
     private String winnersListName;
+    private String distListName;
+    private String leftMotorName;
+    private String rightMotorName;
+    private String actionsListName;
+    private String statesListName;
+
 
     private List winnersList;
     private List saliencyMap;
+    private List distList;
+    private MemoryObject leftMotorMO;
+    private MemoryObject rightMotorMO;
+    private List<String> actionsList;
+    private List<String> statesList;
     private int timeWindow;
     private int sensorDimension;
     
 
 	
-	public LearnerCodelet (String winnersLName, String salMName, int tWindow, int sensDim) {
+	public LearnerCodelet (String winnersLName, String salMName, String distLName,
+			String leftMName, String rightMName, 
+				String actionsLName, String statesLName,
+					int tWindow, int sensDim) {
 		
 		super();
 		
-		actionsList  = new ArrayList<>(Arrays.asList("Go to Winner", "Do nothing", "Turn to Winner"));
+		ArrayList<String> allActionsList  = new ArrayList<>(Arrays.asList("Go to Winner", "Do nothing", "Turn to Winner"));
 		// States are 0 1 2 ... 5^8-1
-		statesList = new ArrayList<>(Arrays.asList(IntStream.rangeClosed(0, (int)Math.pow(5, 8)-1).mapToObj(String::valueOf).toArray(String[]::new)));
+		ArrayList<String> allStatesList = new ArrayList<>(Arrays.asList(IntStream.rangeClosed(0, (int)Math.pow(5, 8)-1).mapToObj(String::valueOf).toArray(String[]::new)));
 		// QLearning initialization
 		ql = new QLearning();
-		ql.setActionsList(actionsList);
+		ql.setActionsList(allActionsList);
 
 		// Initialize QTable to 0
-		for (int i=0; i < statesList.size(); i ++) {
-			for (int j=0; j < actionsList.size(); j++) {
-				ql.setQ(0, statesList.get(i), actionsList.get(j));
+		for (int i=0; i < allStatesList.size(); i ++) {
+			for (int j=0; j < allActionsList.size(); j++) {
+				ql.setQ(0, allStatesList.get(i), allActionsList.get(j));
 			
 			}
 		}
@@ -56,6 +69,11 @@ public class LearnerCodelet extends Codelet
 		
 		salMapName = salMName;
 		winnersListName = winnersLName;
+		distListName = distLName;
+		leftMotorName = leftMName;
+		rightMotorName = rightMName;
+		actionsListName = actionsLName;
+		statesListName = statesLName;
 		timeWindow = tWindow;
         sensorDimension = sensDim;
 
@@ -72,6 +90,20 @@ public class LearnerCodelet extends Codelet
         saliencyMap = (List) MO.getI();
         MO = (MemoryObject) this.getInput(winnersListName);
         winnersList = (List) MO.getI();
+        MO = (MemoryObject) this.getInput(distListName);
+        distList = (List) MO.getI();
+        
+        
+        leftMotorMO = (MemoryObject) this.getOutput(leftMotorName);
+        rightMotorMO = (MemoryObject) this.getOutput(rightMotorName);
+        
+        MO = (MemoryObject) this.getOutput(actionsListName);
+        actionsList = (List) MO.getI();
+        
+        MO = (MemoryObject) this.getOutput(statesListName);
+        statesList = (List) MO.getI();
+        
+        
         
 		
 	}
@@ -90,12 +122,24 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void proc() {
 		
-		// Updates QTable with the reward of that state (?) -> how to update without action? must keep record of action taken in the iteration before
-		//
+		
 		
 		// Converting salMap to discrete value
 		int salMapState = 0;
 		if (saliencyMap.size() != 0) {
+			
+			if (actionsList.size() != 0) {
+				// Find reward of the current state
+				//TODO: como descobrir a recompensa pelo mapa de saliencia? sera que precisa do mapa de features tbm?
+				Double reward = find_reward();
+				// Gets last action taken
+				String lastAction = actionsList.get(actionsList.size() - 1);
+				// Gets last state that was in
+				String lastState = statesList.get(statesList.size() - 1);
+				// Updates QLearning table
+				ql.update(lastState, lastAction, reward);
+			}
+			
 			
 			// Transform each feature into a value between 0 and 4
 			ArrayList<Float> lastLine;
@@ -125,18 +169,30 @@ public class LearnerCodelet extends Codelet
 				salMapState += (int) Math.pow(5, i)*salMapDiscrete;
 				
 			}
-			String salMapStateStr = Integer.toString(salMapState);
-			System.out.println("STATE "+salMapState);
+			
+			String state = Integer.toString(salMapState);
+			//System.out.println("STATE "+salMapState);
+			statesList.add(state);
 			
 			// Selects new best action to take
-			String actionToTake = ql.getAction(salMapStateStr);
+			String actionToTake = ql.getAction(state);
+			actionsList.add(actionToTake);
 			
 			// Apply action
+			//TODO: dada ação escolhida, como aplicar isso?
+			leftMotorMO.setI(2f);
+			rightMotorMO.setI(2f);
 			
 			
 		}
 		
 		
+	}
+	
+	public double find_reward() {
+		Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
+		List lastDistances = (List) distList.get(distList.size() - 1);
+		return 0d;
 	}
 	
 

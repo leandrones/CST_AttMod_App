@@ -28,6 +28,7 @@ public class MotorCodelet extends Codelet {
     private MotorI rm, lm;
     
     public MotorCodelet(MotorI rmo, MotorI lmo){
+    	super();
         rm = rmo;
         lm = lmo;
     }

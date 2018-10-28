@@ -140,7 +140,6 @@ public class DecisionMakingCodelet extends Codelet {
             attMap_sizeMinus1.add(1F);
         }
 
-        System.out.println(winnersList.size());
         for (w = 0; w < winnersList.size(); w++) {
             Long timeCourse = System.currentTimeMillis();
             Winner winner_w = (Winner) winnersList.get(w);
