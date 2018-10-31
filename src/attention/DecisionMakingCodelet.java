@@ -139,7 +139,7 @@ public class DecisionMakingCodelet extends Codelet {
             attMap_sizeMinus1 = (ArrayList < Float >)attentionalMap.get(attentionalMap.size()-1);
             attMap_sizeMinus1.add(1F);
         }
-
+        
         for (w = 0; w < winnersList.size(); w++) {
             Long timeCourse = System.currentTimeMillis();
             Winner winner_w = (Winner) winnersList.get(w);
@@ -198,6 +198,8 @@ public class DecisionMakingCodelet extends Codelet {
                 }
                 System.out.println("");*/
             }
+            System.out.println("hey");
+            System.out.println("ho");
         }
         
         printToFile(attMap_sizeMinus1, "attMap.txt");

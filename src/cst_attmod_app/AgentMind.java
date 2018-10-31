@@ -257,10 +257,10 @@ public class AgentMind extends Mind {
         dec_mak_cod.addOutput(attMapMO);
         insertCodelet(dec_mak_cod);
         
-        Codelet learner_cod = new LearnerCodelet("WINNERS", "SALIENCY_MAP", "DISTANCE_FM", "L_M_SPEED", "R_M_SPEED", "ACTIONS", "STATES", buffersize, sonardimension);
+        Codelet learner_cod = new LearnerCodelet("WINNERS", "SALIENCY_MAP", "SONARS", "L_M_SPEED", "R_M_SPEED", "ACTIONS", "STATES", buffersize, sonardimension);
         learner_cod.addInput(salMapMO);
         learner_cod.addInput(winnersMO);
-        learner_cod.addInput(dist_fmMO);
+        learner_cod.addInput(sonar_read);
         learner_cod.addOutputs(motorMOs);
         learner_cod.addOutput(actionsMO);
         learner_cod.addOutput(statesMO);
@@ -282,5 +282,6 @@ public class AgentMind extends Mind {
         }
 	// Start Cognitive Cycle
 	start(); 
+	
     }
 }

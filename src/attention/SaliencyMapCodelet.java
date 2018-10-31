@@ -93,7 +93,7 @@ public class SaliencyMapCodelet extends Codelet {
                 salMap_sizeMinus1.set(j, mostRecentAttMarray.get(j)*mostRecentCFMarray.get(j));
                 //System.out.print(" j = "+j+ " salMap = "+salMap_sizeMinus1.get(j)+" att map = "+ mostRecentAttMarray.get(j)+" CFM = "+ mostRecentCFMarray.get(j));
             }
-            System.out.println("");
+            System.out.println("Saliency print");
         }
         
         printToFile(salMap_sizeMinus1, "salMap.txt");
