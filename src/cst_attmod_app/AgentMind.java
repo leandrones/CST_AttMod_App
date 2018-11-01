@@ -69,10 +69,6 @@ public class AgentMind extends Mind {
         motorMOs.add(left_motor_speed);
         motorMOs.add(right_motor_speed);
         
-        //Motors
-        Codelet motors = new MotorCodelet(oc.right_motor, oc.left_motor);
-        motors.addInputs(motorMOs);
-        insertCodelet(motors);
         
         //Sensors
         //Sonars
@@ -177,12 +173,16 @@ public class AgentMind extends Mind {
         
         List statesList = Collections.synchronizedList(new ArrayList<String>());
         MemoryObject statesMO = createMemoryObject("STATES", statesList);
-        
-        
-        ////////////////////////////////////////////
-        //Codelets
-        ////////////////////////////////////////////
-        
+//        
+//        
+//        ////////////////////////////////////////////
+//        //Codelets
+//        ////////////////////////////////////////////
+//        
+        //Motors
+        Codelet motors = new MotorCodelet(oc.right_motor, oc.left_motor);
+        motors.addInputs(motorMOs);
+        insertCodelet(motors);
         
         //Sensors
         Codelet sonars = new SonarCodelet(oc.sonar);
@@ -257,7 +257,7 @@ public class AgentMind extends Mind {
         dec_mak_cod.addOutput(attMapMO);
         insertCodelet(dec_mak_cod);
         
-        Codelet learner_cod = new LearnerCodelet("WINNERS", "SALIENCY_MAP", "SONARS", "L_M_SPEED", "R_M_SPEED", "ACTIONS", "STATES", buffersize, sonardimension);
+        Codelet learner_cod = new LearnerCodelet(oc, buffersize, sonardimension);
         learner_cod.addInput(salMapMO);
         learner_cod.addInput(winnersMO);
         learner_cod.addInput(sonar_read);

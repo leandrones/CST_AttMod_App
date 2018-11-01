@@ -42,7 +42,6 @@ public class SonarCodelet extends Codelet {
     @Override
     public void proc() {
         SonarData sonarData = (SonarData) sonar.getData();
-        
         try {
             Thread.sleep(00);
         } catch (Exception e) {

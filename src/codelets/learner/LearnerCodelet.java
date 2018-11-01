@@ -20,6 +20,7 @@ import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
 import br.unicamp.cst.learning.QLearning;
 import br.unicamp.cst.learning.QLearning;
+import outsideCommunication.OutsideCommunication;
 import outsideCommunication.SonarData;
 
 
@@ -35,36 +36,30 @@ public class LearnerCodelet extends Codelet
 	private static float CRASH_TRESHOLD = 0.5f;
 	
 	private QLearning ql;
-    private String salMapName;
-    private String winnersListName;
-    private String sonarListName;
-    private String leftMotorName;
-    private String rightMotorName;
-    private String actionsListName;
-    private String statesListName;
-
+    
 
     private List winnersList;
     private List saliencyMap;
     private SonarData sonarReadings;
+    private MemoryObject motorActionMO;
     private MemoryObject leftMotorMO;
     private MemoryObject rightMotorMO;
+    
     private List<String> actionsList;
     private List<String> statesList;
+    
+    private OutsideCommunication oc;
     private int timeWindow;
     private int sensorDimension;
     
 
 	
-	public LearnerCodelet (String winnersLName, String salMName, String sonarLName,
-			String leftMName, String rightMName, 
-				String actionsLName, String statesLName,
-					int tWindow, int sensDim) {
+	public LearnerCodelet (OutsideCommunication outc, int tWindow, int sensDim) {
 		
 		super();
 		time_graph = 0;
 		
-		ArrayList<String> allActionsList  = new ArrayList<>(Arrays.asList("Go to Winner", "Do nothing", "Turn to Winner"));
+		ArrayList<String> allActionsList  = new ArrayList<>(Arrays.asList("Move Foward", "Do nothing", "Turn to Winner"));
 		// States are 0 1 2 ... 5^8-1
 		ArrayList<String> allStatesList = new ArrayList<>(Arrays.asList(IntStream.rangeClosed(0, (int)Math.pow(5, 8)-1).mapToObj(String::valueOf).toArray(String[]::new)));
 		// QLearning initialization
@@ -80,13 +75,8 @@ public class LearnerCodelet extends Codelet
 		}
 		//ql.printQ();
 		
-		salMapName = salMName;
-		winnersListName = winnersLName;
-		sonarListName = sonarLName;
-		leftMotorName = leftMName;
-		rightMotorName = rightMName;
-		actionsListName = actionsLName;
-		statesListName = statesLName;
+		
+		oc = outc;
 		timeWindow = tWindow;
         sensorDimension = sensDim;
 
@@ -100,21 +90,23 @@ public class LearnerCodelet extends Codelet
 	// Here, the user must get the inputs and outputs it needs to perform proc.
 	@Override
 	public void accessMemoryObjects() {
+		
 		MemoryObject MO;
-        MO = (MemoryObject) this.getInput(salMapName);
+        MO = (MemoryObject) this.getInput("SALIENCY_MAP");
         saliencyMap = (List) MO.getI();
-        MO = (MemoryObject) this.getInput(winnersListName);
+        MO = (MemoryObject) this.getInput("WINNERS");
         winnersList = (List) MO.getI();
-        MO = (MemoryObject) this.getInput(sonarListName);
+        MO = (MemoryObject) this.getInput("SONARS");
         sonarReadings = (SonarData) MO.getI();
         
-        leftMotorMO = (MemoryObject) this.getOutput(leftMotorName);
-        rightMotorMO = (MemoryObject) this.getOutput(rightMotorName);
+        motorActionMO = (MemoryObject) this.getOutput("MOTOR");
+        leftMotorMO = (MemoryObject) this.getOutput("L_M_SPEED");
+        rightMotorMO = (MemoryObject) this.getOutput("R_M_SPEED");
         
-        MO = (MemoryObject) this.getOutput(actionsListName);
+        MO = (MemoryObject) this.getOutput("ACTIONS");
         actionsList = (List) MO.getI();
         
-        MO = (MemoryObject) this.getOutput(statesListName);
+        MO = (MemoryObject) this.getOutput("STATES");
         statesList = (List) MO.getI();
         
         
@@ -194,7 +186,8 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void proc() {
 		
-		
+		System.out.println("Learner cod! "+time_graph);
+
 		String state = "-1";
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
 			
@@ -219,14 +212,26 @@ public class LearnerCodelet extends Codelet
 			String actionToTake = ql.getAction(state);
 			actionsList.add(actionToTake);
 			
+			
+			motorActionMO.setI(actionToTake);
+			
 			// Apply action
-			//TODO: dada ação escolhida, como aplicar isso?
-			leftMotorMO.setI(2f);
-			rightMotorMO.setI(2f);
-			
-			
+			if (actionToTake == "Move Foward") {
+				// Sets leftMototMO and right to velocity proportional to winner feature
+				leftMotorMO.setI(2f);
+				rightMotorMO.setI(2f);
+				
+			}
+			else if (actionToTake == "Turn to Winner") {
+				//TODO: usar ground truth
+				//System.out.println("OC GT" +oc.ground_truth_orientation.getData());
+				//Fazer a diferença dos angulos e setar velocidades nas rotas corretamente
+				//ex: andar por 2 s (tempo definido no Motor Codelete) x angulos -- qual a velocidade em cada roda? (uma zero e a outra v)
+				
+				
+			}
 		}
-		//System.out.println(isProfiling());
+
 		printToFile(state, "states.txt");
 		
 		
@@ -236,7 +241,7 @@ public class LearnerCodelet extends Codelet
 	
 	public double find_reward() {
 		Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
-		System.out.println(sonarReadings.sonar_readings);
+		//System.out.println(sonarReadings.sonar_readings);
 		Integer winnerIndex = lastWinner.featureJ;
 		// crashed winner
 		if (sonarReadings.sonar_readings.get(winnerIndex) < CRASH_TRESHOLD) {
@@ -255,7 +260,7 @@ public class LearnerCodelet extends Codelet
 	
 	private void printToFile(Object object,String filename){
         
-        if (time_graph < 100) {
+        if (time_graph < 50) {
 	        try(FileWriter fw = new FileWriter(filename,true);
 	            BufferedWriter bw = new BufferedWriter(fw);
 	            PrintWriter out = new PrintWriter(bw))
@@ -267,6 +272,7 @@ public class LearnerCodelet extends Codelet
 	            e.printStackTrace();
 	        }
         }
+        
         
     }
 

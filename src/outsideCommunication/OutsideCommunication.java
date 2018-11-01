@@ -25,9 +25,11 @@ import coppelia.CharWA;
 public class OutsideCommunication {
     
     public remoteApi vrep;
+    public int clientID;
     public MotorI right_motor, left_motor;
     public SensorI sonar;
     public SensorI laser;
+    public SensorI ground_truth_orientation; 
     
     public OutsideCommunication(){
         vrep = new remoteApi();
@@ -37,7 +39,7 @@ public class OutsideCommunication {
         // System.out.println("Program started");
         vrep = new remoteApi();
         vrep.simxFinish(-1); // just in case, close all opened connections
-        int clientID = vrep.simxStart("127.0.0.1",25000,true,true,5000,5);
+        clientID = vrep.simxStart("127.0.0.1",25000,true,true,5000,5);
         
         if (clientID == -1){
             System.err.println("Connection failed");
@@ -96,8 +98,8 @@ public class OutsideCommunication {
         }
         
         // START 
-        vrep.simxStartSimulation(clientID, remoteApi.simx_opmode_blocking);
-        
+        vrep.simxStartSimulation(clientID, remoteApi.simx_opmode_oneshot);
+
         //Sonar initialization reading
         for(int i = 0; i< 16; i++){
             int ret = vrep.simxReadProximitySensor(clientID,sonar_handles[i].getValue(),null,null,null,null,remoteApi.simx_opmode_streaming);
@@ -116,7 +118,29 @@ public class OutsideCommunication {
         
         laser = new LaserVrep(clientID, signal_laser_value, vrep);
         
+        //Ground Truth Orientation initialization
+        IntW orientation_handle = new IntW(-1);
+        try {
+            //vrep.simxGetObjectHandle(clientID, "Pioneer_p3dx", orientation_handle, remoteApi.simx_opmode_blocking);
+            //if(orientation_handle.getValue() == -1)
+            //    System.out.println("Error on initialing orientation ground truth: ");
+            
+            //vrep.simxGetObjectOrientation(clientID, orientation_handle.getValue(), -1, null, remoteApi.simx_opmode_streaming);
+            
+            //ground_truth_orientation = new GroundTruthOrientationVrep(clientID, orientation_handle.getValue(), vrep);
+             
+        }
+        catch (Exception e) {
+			e.getStackTrace();
+		}
+        
+       
+        
+        
        
         
     }
+    
+  
+    
 }

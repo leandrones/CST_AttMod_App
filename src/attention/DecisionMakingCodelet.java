@@ -198,8 +198,7 @@ public class DecisionMakingCodelet extends Codelet {
                 }
                 System.out.println("");*/
             }
-            System.out.println("hey");
-            System.out.println("ho");
+            
         }
         
         printToFile(attMap_sizeMinus1, "attMap.txt");
