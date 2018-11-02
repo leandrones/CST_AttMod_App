@@ -260,7 +260,7 @@ public class AgentMind extends Mind {
         Codelet learner_cod = new LearnerCodelet(oc, buffersize, sonardimension);
         learner_cod.addInput(salMapMO);
         learner_cod.addInput(winnersMO);
-        learner_cod.addInput(sonar_read);
+//        learner_cod.addInput(sonar_read);
         learner_cod.addOutputs(motorMOs);
         learner_cod.addOutput(actionsMO);
         learner_cod.addOutput(statesMO);

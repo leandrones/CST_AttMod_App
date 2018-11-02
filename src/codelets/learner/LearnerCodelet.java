@@ -96,8 +96,8 @@ public class LearnerCodelet extends Codelet
         saliencyMap = (List) MO.getI();
         MO = (MemoryObject) this.getInput("WINNERS");
         winnersList = (List) MO.getI();
-        MO = (MemoryObject) this.getInput("SONARS");
-        sonarReadings = (SonarData) MO.getI();
+//        MO = (MemoryObject) this.getInput("SONARS");
+//        sonarReadings = (SonarData) MO.getI();
         
         motorActionMO = (MemoryObject) this.getOutput("MOTOR");
         leftMotorMO = (MemoryObject) this.getOutput("L_M_SPEED");
@@ -186,15 +186,16 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void proc() {
 		
-		System.out.println("Learner cod! "+time_graph);
-
 		String state = "-1";
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
 			
+			Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
+			Integer winnerIndex = lastWinner.featureJ;
+			
 			if (!actionsList.isEmpty()) {
-				// Find reward of the current state
-				//TODO: como descobrir a recompensa pelo mapa de saliencia? sera que precisa do mapa de features tbm?
-				Double reward = find_reward();
+				// Find reward of the current state, given current winner (TODO maybe previous winner)
+				
+				Double reward = find_reward(winnerIndex);
 				// Gets last action taken
 				String lastAction = actionsList.get(actionsList.size() - 1);
 				// Gets last state that was in
@@ -223,8 +224,10 @@ public class LearnerCodelet extends Codelet
 				
 			}
 			else if (actionToTake == "Turn to Winner") {
-				//TODO: usar ground truth
-				//System.out.println("OC GT" +oc.ground_truth_orientation.getData());
+				// get robot orientation
+				Float pioneer_orientation = (Float) oc.pioneer_orientation.getData();
+				// get winner orientation
+				Float winner_orientation = (Float) oc.sonar_orientations.get(winnerIndex).getData();
 				//Fazer a diferença dos angulos e setar velocidades nas rotas corretamente
 				//ex: andar por 2 s (tempo definido no Motor Codelete) x angulos -- qual a velocidade em cada roda? (uma zero e a outra v)
 				
@@ -239,20 +242,18 @@ public class LearnerCodelet extends Codelet
 	
 	
 	
-	public double find_reward() {
-		Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
-		//System.out.println(sonarReadings.sonar_readings);
-		Integer winnerIndex = lastWinner.featureJ;
+	public double find_reward(Integer winnerIndex) {
+		
 		// crashed winner
-		if (sonarReadings.sonar_readings.get(winnerIndex) < CRASH_TRESHOLD) {
-			return 10d;
-		}
-		// check if crashed other thing
-		for (int i=0; i < sensorDimension; i++) {
-			if (i != winnerIndex && sonarReadings.sonar_readings.get(i) < CRASH_TRESHOLD) {
-				return -10d;
-			} 
-		}
+//		if (sonarReadings.sonar_readings.get(winnerIndex) < CRASH_TRESHOLD) {
+//			return 10d;
+//		}
+//		// check if crashed other thing
+//		for (int i=0; i < sensorDimension; i++) {
+//			if (i != winnerIndex && sonarReadings.sonar_readings.get(i) < CRASH_TRESHOLD) {
+//				return -10d;
+//			} 
+//		}
 		// nothing
 		return 0d;
 			

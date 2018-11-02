@@ -14,9 +14,13 @@ package outsideCommunication;
 
 import coppelia.IntW;
 import coppelia.remoteApi;
+
+import java.util.ArrayList;
+
 import CommunicationInterface.MotorI;
 import CommunicationInterface.SensorI;
 import coppelia.CharWA;
+import coppelia.FloatWA;
 
 /**
  *
@@ -29,7 +33,9 @@ public class OutsideCommunication {
     public MotorI right_motor, left_motor;
     public SensorI sonar;
     public SensorI laser;
-    public SensorI ground_truth_orientation; 
+    public SensorI pioneer_orientation; 
+    public ArrayList<SensorI> sonar_orientations; 
+
     
     public OutsideCommunication(){
         vrep = new remoteApi();
@@ -98,8 +104,9 @@ public class OutsideCommunication {
         }
         
         // START 
-        vrep.simxStartSimulation(clientID, remoteApi.simx_opmode_oneshot);
+        vrep.simxStartSimulation(clientID, remoteApi.simx_opmode_blocking);
 
+        
         //Sonar initialization reading
         for(int i = 0; i< 16; i++){
             int ret = vrep.simxReadProximitySensor(clientID,sonar_handles[i].getValue(),null,null,null,null,remoteApi.simx_opmode_streaming);
@@ -119,22 +126,19 @@ public class OutsideCommunication {
         laser = new LaserVrep(clientID, signal_laser_value, vrep);
         
         //Ground Truth Orientation initialization
-        IntW orientation_handle = new IntW(-1);
-        try {
-            //vrep.simxGetObjectHandle(clientID, "Pioneer_p3dx", orientation_handle, remoteApi.simx_opmode_blocking);
-            //if(orientation_handle.getValue() == -1)
-            //    System.out.println("Error on initialing orientation ground truth: ");
-            
-            //vrep.simxGetObjectOrientation(clientID, orientation_handle.getValue(), -1, null, remoteApi.simx_opmode_streaming);
-            
-            //ground_truth_orientation = new GroundTruthOrientationVrep(clientID, orientation_handle.getValue(), vrep);
-             
-        }
-        catch (Exception e) {
-			e.getStackTrace();
-		}
+        IntW pioneer_handle = new IntW(-1);
+        vrep.simxGetObjectHandle(clientID, "Pioneer_p3dx", pioneer_handle, remoteApi.simx_opmode_blocking);
+        if(pioneer_handle.getValue() == -1)
+            System.out.println("Error on initialing orientation ground truth: ");
         
-       
+        FloatWA angles = new FloatWA(3);
+        vrep.simxGetObjectOrientation(clientID, pioneer_handle.getValue(), -1, angles, remoteApi.simx_opmode_streaming);
+        for (int i=1; i <= 16; i++) {
+        	vrep.simxGetObjectOrientation(clientID, sonar_handles[i].getValue(), -1, angles, remoteApi.simx_opmode_streaming);
+        	sonar_orientations.add(new OrientationGTVrep(clientID, sonar_handles[i], vrep));
+        }
+        pioneer_orientation = new OrientationGTVrep(clientID, pioneer_handle, vrep);
+        
         
         
        

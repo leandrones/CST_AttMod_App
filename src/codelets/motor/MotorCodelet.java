@@ -54,13 +54,13 @@ public class MotorCodelet extends Codelet {
     		
     		rm.setSpeed((float) rm_speed_MO.getI());
             lm.setSpeed((float) lm_speed_MO.getI());
-            try {
-                Thread.sleep(MOVEMENT_TIME);
-            } catch (Exception e) {
-                Thread.currentThread().interrupt();
-            }
-            rm.setSpeed(0f);
-            lm.setSpeed(0f);
+//            try {
+//                Thread.sleep(MOVEMENT_TIME);
+//            } catch (Exception e) {
+//                Thread.currentThread().interrupt();
+//            }
+//            rm.setSpeed(0f);
+//            lm.setSpeed(0f);
 			
 		}        
         
