@@ -15,6 +15,8 @@ package attention;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.Memory;
 import br.unicamp.cst.core.entities.MemoryObject;
+import codelets.motor.Lock;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -70,6 +72,7 @@ public class SaliencyMapCodelet extends Codelet {
 
     @Override
     public void proc() {
+    	while(!Lock.canRun()) {}
         ArrayList<Float> salMap_sizeMinus1 = null;
         
         if(saliencyMap.size() == timeWindow){

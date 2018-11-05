@@ -14,6 +14,7 @@ package codelets.sensors;
 
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.sensorial.FeatMapCodelet;
+import codelets.motor.Lock;
 import cst_attmod_app.AgentMind;
 import static cst_attmod_app.AgentMind.buffersize;
 import static cst_attmod_app.AgentMind.laserdimension;
@@ -48,6 +49,7 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
 
     @Override
     public void proc() {
+    	while(!Lock.canRun()){}
         try {
             Thread.sleep(50);
         } catch (Exception e) {

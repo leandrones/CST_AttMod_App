@@ -14,6 +14,8 @@ package codelets.sensors;
 
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.sensorial.FeatMapCodelet;
+import codelets.motor.Lock;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,6 +45,7 @@ public class DistanceFeatMapCodelet extends FeatMapCodelet {
 
     @Override
     public void proc() {
+    	while(!Lock.canRun()) {}
         try {
             Thread.sleep(50);
         } catch (Exception e) {

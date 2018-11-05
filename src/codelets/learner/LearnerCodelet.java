@@ -18,6 +18,7 @@ import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
+import codelets.motor.Lock;
 import br.unicamp.cst.learning.QLearning;
 import br.unicamp.cst.learning.QLearning;
 import outsideCommunication.OutsideCommunication;
@@ -132,49 +133,6 @@ public class LearnerCodelet extends Codelet
 	}
 
 	
-	// Normalize and transform a salience map into one state
-	// Normalized values between 0 and 1 can be mapped into 0, 1, 2, 3 or 4
-	// Them this values are computed into one respective state
-	public String getStateFromSalMap() {
-		
-		ArrayList<Float> lastLine;
-		// Getting just the last entry (current sal map)
-		lastLine = (ArrayList<Float>) saliencyMap.get(saliencyMap.size() -1);
-		
-		// For normalizing readings between 0 and 1 before transforming to state 
-		Float max = Collections.max(lastLine);
-		Float min = Collections.min(lastLine);		
-		
-		Integer discreteVal = 0;
-		Integer stateVal = 0;
-		for (int i=0; i < sensorDimension; i++) {
-			// Normalizing value
-			Float normVal = (lastLine.get(i)-min)/(max-min);
-
-			// Getting discrete value
-			if (normVal < 0.2) {
-				discreteVal = 0;
-			}
-			else if (normVal < 0.4) {
-				discreteVal = 1;
-			}
-			else if (normVal < 0.6) {
-				discreteVal = 2;
-			}
-			else if (normVal < 0.8) {
-				discreteVal = 3;
-			}
-			else if (normVal < 1) {
-				discreteVal = 4;
-			}
-			
-			// Getting state from discrete value
-			stateVal += (int) Math.pow(5, i)*discreteVal;
-			
-		}
-		
-		return stateVal.toString();
-	}
 	
 	//@Override
 	//public synchronized boolean shouldLoop() 
@@ -186,11 +144,14 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void proc() {
 		
+		while(!Lock.canRun()) {}
+		System.out.println("Learner!");
 		String state = "-1";
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
 			
-			Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
-			Integer winnerIndex = lastWinner.featureJ;
+//			Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
+//			Integer winnerIndex = lastWinner.featureJ;
+			Integer winnerIndex = 6;
 			
 			if (!actionsList.isEmpty()) {
 				// Find reward of the current state, given current winner (TODO maybe previous winner)
@@ -230,7 +191,8 @@ public class LearnerCodelet extends Codelet
 				Float winner_orientation = (Float) oc.sonar_orientations.get(winnerIndex).getData();
 				//Fazer a diferença dos angulos e setar velocidades nas rotas corretamente
 				//ex: andar por 2 s (tempo definido no Motor Codelete) x angulos -- qual a velocidade em cada roda? (uma zero e a outra v)
-				
+				Float diff = pioneer_orientation - winner_orientation;
+//				System.out.println("Differene for winner "+winnerIndex+">"+diff);
 				
 			}
 		}
@@ -258,6 +220,51 @@ public class LearnerCodelet extends Codelet
 		return 0d;
 			
 	}
+	
+	// Normalize and transform a salience map into one state
+		// Normalized values between 0 and 1 can be mapped into 0, 1, 2, 3 or 4
+		// Them this values are computed into one respective state
+		public String getStateFromSalMap() {
+			
+			ArrayList<Float> lastLine;
+			// Getting just the last entry (current sal map)
+			lastLine = (ArrayList<Float>) saliencyMap.get(saliencyMap.size() -1);
+			
+			// For normalizing readings between 0 and 1 before transforming to state 
+			Float max = Collections.max(lastLine);
+			Float min = Collections.min(lastLine);		
+			
+			Integer discreteVal = 0;
+			Integer stateVal = 0;
+			for (int i=0; i < sensorDimension; i++) {
+				// Normalizing value
+				Float normVal = (lastLine.get(i)-min)/(max-min);
+
+				// Getting discrete value
+				if (normVal < 0.2) {
+					discreteVal = 0;
+				}
+				else if (normVal < 0.4) {
+					discreteVal = 1;
+				}
+				else if (normVal < 0.6) {
+					discreteVal = 2;
+				}
+				else if (normVal < 0.8) {
+					discreteVal = 3;
+				}
+				else if (normVal < 1) {
+					discreteVal = 4;
+				}
+				
+				// Getting state from discrete value
+				stateVal += (int) Math.pow(5, i)*discreteVal;
+				
+			}
+			
+			return stateVal.toString();
+		}
+		
 	
 	private void printToFile(Object object,String filename){
         

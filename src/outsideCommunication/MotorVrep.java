@@ -39,7 +39,6 @@ public class MotorVrep implements MotorI {
 
     @Override
     public int setSpeed(float speed) {
-    	System.out.println("Motor not cod!"+speed);
         this.speed = speed;
                 
        if(! (vrep.simxSetJointTargetVelocity(clientID, motor_handle, speed, remoteApi.simx_opmode_oneshot) == remoteApi.simx_error_noerror)) {

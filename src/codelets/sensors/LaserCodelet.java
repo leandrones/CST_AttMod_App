@@ -15,6 +15,7 @@ package codelets.sensors;
 import CommunicationInterface.SensorI;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
+import codelets.motor.Lock;
 
 /**
  *
@@ -40,6 +41,7 @@ public class LaserCodelet extends Codelet {
 
     @Override
     public void proc() {
+    	while(!Lock.canRun()) {}
         laser_read.setI(laser.getData());
         
         //// System.out.println("laser read: "+laser_read.toString());

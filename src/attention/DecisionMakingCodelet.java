@@ -14,6 +14,8 @@ package attention;
 
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
+import codelets.motor.Lock;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -25,7 +27,7 @@ import java.util.List;
  *
  * @author leandro
  */
-public class DecisionMakingCodelet extends Codelet {
+public class DecisionMakingCodelet extends Codelet{
     
     private  int time_graph;
     
@@ -87,6 +89,7 @@ public class DecisionMakingCodelet extends Codelet {
 
     @Override
     public void proc() {
+        while(!Lock.canRun()) {}
         //winner computation
         float max = 0;
         int max_index = -1;
