@@ -130,14 +130,14 @@ public class OutsideCommunication {
 		if (pioneer_handle.getValue() == -1)
 			System.out.println("Error on initialing orientation ground truth: ");
 
-//		FloatWA angles = new FloatWA(3);
-//		vrep.simxGetObjectOrientation(clientID, pioneer_handle.getValue(), -1, angles, remoteApi.simx_opmode_streaming);
-//		for (int i = 0; i < 8; i++) {
-//			vrep.simxGetObjectOrientation(clientID, sonar_handles[i].getValue(), -1, angles,
-//					remoteApi.simx_opmode_streaming);
-//			sonar_orientations.add(new OrientationGTVrep(clientID, sonar_handles[i], vrep));
-//		}
-//		pioneer_orientation = new OrientationGTVrep(clientID, pioneer_handle, vrep);
+		FloatWA angles = new FloatWA(3);
+		vrep.simxGetObjectOrientation(clientID, pioneer_handle.getValue(), -1, angles, remoteApi.simx_opmode_streaming);
+		for (int i = 0; i < 8; i++) {
+			vrep.simxGetObjectOrientation(clientID, sonar_handles[i].getValue(), -1, angles,
+					remoteApi.simx_opmode_streaming);
+			sonar_orientations.add(new OrientationGTVrep(clientID, sonar_handles[i], vrep));
+		}
+		pioneer_orientation = new OrientationGTVrep(clientID, pioneer_handle, vrep);
 
 	}
 

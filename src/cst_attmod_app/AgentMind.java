@@ -213,58 +213,58 @@ public class AgentMind extends Mind {
         sensbuff_names.add("SONAR_BUFFER");
         sensbuff_names.add("LASER_BUFFER");
         
-//        // System.out.println("size sens buff name "+sensbuff_name.size());
+        // System.out.println("size sens buff name "+sensbuff_name.size());
         
-//        Codelet direction_fm_c = new DirectionFeatMapCodelet(sensbuff_names.size(), sensbuff_names, "DIRECTION_FM",buffersize,sonardimension);
-//        direction_fm_c.addInput(sonar_bufferMO);
-//        direction_fm_c.addInput(laser_bufferMO);
-//        direction_fm_c.addOutput(direction_fmMO);
-//        insertCodelet(direction_fm_c);
-//
-//        //Distance
-//        ArrayList<String> sensbuff_names_dist = new ArrayList<>();
-//        sensbuff_names_dist.add("LASER_BUFFER");
-//        
-////        // System.out.println("size sens buff name "+sensbuff_names.size());
-//        
-//        Codelet dist_fm_c = new DistanceFeatMapCodelet(sensbuff_names_dist.size(), sensbuff_names_dist, "DISTANCE_FM",buffersize,laserdimension);
-//        dist_fm_c.addInput(laser_bufferMO);
-//        dist_fm_c.addOutput(dist_fmMO);
-//        insertCodelet(dist_fm_c);
-//        
-//        ArrayList<String> FMnames = new ArrayList<>();
-//        FMnames.add("DIRECTION_FM");
-//        FMnames.add("DISTANCE_FM");        
-//        
-//        Codelet comb_fm_c = new AppCombFeatMapCodelet(FMnames.size(), FMnames,buffersize,sonardimension);
-//        comb_fm_c.addInput(direction_fmMO);
-//        comb_fm_c.addInput(dist_fmMO);
-//        comb_fm_c.addInput(weightsMO);
-//        comb_fm_c.addOutput(combFMMO);
-//        insertCodelet(comb_fm_c);
-//        
-//        //SALIENCY MAP CODELET
-//        Codelet sal_map_cod = new SaliencyMapCodelet("SALIENCY_MAP", "COMB_FM", "ATTENTIONAL_MAP", buffersize, sonardimension);
-//        sal_map_cod.addInput(combFMMO);
-//        sal_map_cod.addInput(attMapMO);
-//        sal_map_cod.addOutput(salMapMO);
-//        insertCodelet(sal_map_cod);
-//        
-//        //DECISION MAKING CODELET
-//        Codelet dec_mak_cod = new DecisionMakingCodelet("WINNERS", "ATTENTIONAL_MAP", "SALIENCY_MAP", buffersize, sonardimension);
-//        dec_mak_cod.addInput(salMapMO);
-//        dec_mak_cod.addOutput(winnersMO);
-//        dec_mak_cod.addOutput(attMapMO);
-//        insertCodelet(dec_mak_cod);
-//        
-//        Codelet learner_cod = new LearnerCodelet(oc, buffersize, sonardimension);
-//        learner_cod.addInput(salMapMO);
-//        learner_cod.addInput(winnersMO);
-////        learner_cod.addInput(sonar_read);
-//        learner_cod.addOutputs(motorMOs);
-//        learner_cod.addOutput(actionsMO);
-//        learner_cod.addOutput(statesMO);
-//        insertCodelet(learner_cod);
+        Codelet direction_fm_c = new DirectionFeatMapCodelet(sensbuff_names.size(), sensbuff_names, "DIRECTION_FM",buffersize,sonardimension);
+        direction_fm_c.addInput(sonar_bufferMO);
+        direction_fm_c.addInput(laser_bufferMO);
+        direction_fm_c.addOutput(direction_fmMO);
+        insertCodelet(direction_fm_c);
+
+        //Distance
+        ArrayList<String> sensbuff_names_dist = new ArrayList<>();
+        sensbuff_names_dist.add("LASER_BUFFER");
+        
+        // System.out.println("size sens buff name "+sensbuff_names.size());
+        
+        Codelet dist_fm_c = new DistanceFeatMapCodelet(sensbuff_names_dist.size(), sensbuff_names_dist, "DISTANCE_FM",buffersize,laserdimension);
+        dist_fm_c.addInput(laser_bufferMO);
+        dist_fm_c.addOutput(dist_fmMO);
+        insertCodelet(dist_fm_c);
+        
+        ArrayList<String> FMnames = new ArrayList<>();
+        FMnames.add("DIRECTION_FM");
+        FMnames.add("DISTANCE_FM");        
+        
+        Codelet comb_fm_c = new AppCombFeatMapCodelet(FMnames.size(), FMnames,buffersize,sonardimension);
+        comb_fm_c.addInput(direction_fmMO);
+        comb_fm_c.addInput(dist_fmMO);
+        comb_fm_c.addInput(weightsMO);
+        comb_fm_c.addOutput(combFMMO);
+        insertCodelet(comb_fm_c);
+        
+        //SALIENCY MAP CODELET
+        Codelet sal_map_cod = new SaliencyMapCodelet("SALIENCY_MAP", "COMB_FM", "ATTENTIONAL_MAP", buffersize, sonardimension);
+        sal_map_cod.addInput(combFMMO);
+        sal_map_cod.addInput(attMapMO);
+        sal_map_cod.addOutput(salMapMO);
+        insertCodelet(sal_map_cod);
+        
+        //DECISION MAKING CODELET
+        Codelet dec_mak_cod = new DecisionMakingCodelet("WINNERS", "ATTENTIONAL_MAP", "SALIENCY_MAP", buffersize, sonardimension);
+        dec_mak_cod.addInput(salMapMO);
+        dec_mak_cod.addOutput(winnersMO);
+        dec_mak_cod.addOutput(attMapMO);
+        insertCodelet(dec_mak_cod);
+        
+        Codelet learner_cod = new LearnerCodelet(oc, buffersize, sonardimension);
+        learner_cod.addInput(salMapMO);
+        learner_cod.addInput(winnersMO);
+        learner_cod.addInput(sonar_read);
+        learner_cod.addOutputs(motorMOs);
+        learner_cod.addOutput(actionsMO);
+        learner_cod.addOutput(statesMO);
+        insertCodelet(learner_cod);
         
 
         ///////////////////////////////////////////////////////////////

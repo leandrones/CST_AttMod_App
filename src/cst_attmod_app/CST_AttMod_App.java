@@ -38,7 +38,6 @@ public class CST_AttMod_App {
         AgentMind am = new AgentMind(oc);
        
 
-        while(true) {}
         
     }
     

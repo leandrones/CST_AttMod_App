@@ -27,7 +27,7 @@ public class MotorCodelet extends Codelet {
     private MemoryObject rm_speed_MO, lm_speed_MO; 
     private MotorI rm, lm;
     
-    private int MOVEMENT_TIME = 10000; // 2 seconds
+    private int MOVEMENT_TIME = 2000; // 2 seconds
     
     public MotorCodelet(MotorI rmo, MotorI lmo){
     	super();
@@ -50,30 +50,30 @@ public class MotorCodelet extends Codelet {
     @Override
     public void proc() {
     	String action = (String) motorActionMO.getI();
-//    	if (action == "Move Foward" || action == "Turn to Winner") {
-//    		
-//    		System.out.println("Setting lock");
-//    		Lock.setCanRun(false);
-//    		// Setting speed
-//    		rm.setSpeed((float) rm_speed_MO.getI());
-//            lm.setSpeed((float) lm_speed_MO.getI());
-//            
-//            // Sleeps to complete movement
-//    		try {
-//              Thread.sleep(MOVEMENT_TIME);
-//    		} catch (Exception e) {
-//              Thread.currentThread().interrupt();
-//    		}
-//    	
-//    		Lock.setCanRun(true);
-//    		System.out.println("Done lock");
-//    		// Stopping robot
-//    		rm.setSpeed(0f);
-//    		lm.setSpeed(0f);
-//    		
-//    	
-//			
-//		}        
+    	if (action == "Move Foward") {// || action == "Turn to Winner") {
+    		
+    		System.out.println("Setting lock");
+    		Lock.setCanRun(false);
+    		// Setting speed
+    		rm.setSpeed((float) rm_speed_MO.getI());
+            lm.setSpeed((float) lm_speed_MO.getI());
+            
+            // Sleeps to complete movement
+    		try {
+              Thread.sleep(MOVEMENT_TIME);
+    		} catch (Exception e) {
+              Thread.currentThread().interrupt();
+    		}
+    	
+    		Lock.setCanRun(true);
+    		System.out.println("Done lock");
+    		// Stopping robot
+    		rm.setSpeed(0f);
+    		lm.setSpeed(0f);
+    		
+    	
+			
+		}        
         
     }
     

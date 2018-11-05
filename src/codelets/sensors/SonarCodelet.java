@@ -42,20 +42,15 @@ public class SonarCodelet extends Codelet {
 
     @Override
     public void proc() {
-    	while(!Lock.canRun()) {}
+//    	while(!Lock.canRun()) {}
         SonarData sonarData = (SonarData) sonar.getData();
-//        try {
-//            Thread.sleep(50);
-//        } catch (Exception e) {
-//            Thread.currentThread().interrupt();
-//        }
-        
+
         sonar_read.setI(sonarData);
         
-         System.out.println(sonar_read.toString());
+//         System.out.println(sonar_read.toString());
         SonarData a = (SonarData) sonar_read.getI();
-         System.out.println("Sonar detect state = "+a.detect_state.toString());
-         System.out.println("Sonar value = "+a.sonar_readings);
+//         System.out.println("Sonar detect state = "+a.detect_state.toString());
+//         System.out.println("Sonar value = "+a.sonar_readings);
     }
     
 }

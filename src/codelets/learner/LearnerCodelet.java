@@ -34,7 +34,7 @@ public class LearnerCodelet extends Codelet
 {
 
 	private int time_graph;
-	private static float CRASH_TRESHOLD = 0.5f;
+	private static float CRASH_TRESHOLD = 0.95f;
 	
 	private QLearning ql;
     
@@ -97,8 +97,8 @@ public class LearnerCodelet extends Codelet
         saliencyMap = (List) MO.getI();
         MO = (MemoryObject) this.getInput("WINNERS");
         winnersList = (List) MO.getI();
-//        MO = (MemoryObject) this.getInput("SONARS");
-//        sonarReadings = (SonarData) MO.getI();
+        MO = (MemoryObject) this.getInput("SONARS");
+        sonarReadings = (SonarData) MO.getI();
         
         motorActionMO = (MemoryObject) this.getOutput("MOTOR");
         leftMotorMO = (MemoryObject) this.getOutput("L_M_SPEED");
@@ -145,16 +145,15 @@ public class LearnerCodelet extends Codelet
 	public void proc() {
 		
 		while(!Lock.canRun()) {}
-		System.out.println("Learner!");
 		String state = "-1";
+		
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
 			
-//			Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
-//			Integer winnerIndex = lastWinner.featureJ;
-			Integer winnerIndex = 6;
+			Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
+			Integer winnerIndex = lastWinner.featureJ;
 			
 			if (!actionsList.isEmpty()) {
-				// Find reward of the current state, given current winner (TODO maybe previous winner)
+				// Find reward of the current state, given previous  winner 
 				
 				Double reward = find_reward(winnerIndex);
 				// Gets last action taken
@@ -205,17 +204,17 @@ public class LearnerCodelet extends Codelet
 	
 	
 	public double find_reward(Integer winnerIndex) {
-		
-		// crashed winner
-//		if (sonarReadings.sonar_readings.get(winnerIndex) < CRASH_TRESHOLD) {
-//			return 10d;
-//		}
-//		// check if crashed other thing
-//		for (int i=0; i < sensorDimension; i++) {
-//			if (i != winnerIndex && sonarReadings.sonar_readings.get(i) < CRASH_TRESHOLD) {
-//				return -10d;
-//			} 
-//		}
+
+		// check if crashed winner
+		if (sonarReadings.sonar_readings.get(winnerIndex) > CRASH_TRESHOLD) {
+			return 10d;
+		}
+		// check if crashed other thing
+		for (int i=0; i < sensorDimension; i++) {
+			if (i != winnerIndex && sonarReadings.sonar_readings.get(i) > CRASH_TRESHOLD) {
+				return -10d;
+			} 
+		}
 		// nothing
 		return 0d;
 			
