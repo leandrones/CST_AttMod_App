@@ -72,7 +72,11 @@ public class SaliencyMapCodelet extends Codelet {
 
     @Override
     public void proc() {
-    	while(!Lock.canRun()) {}
+    	try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
         ArrayList<Float> salMap_sizeMinus1 = null;
         
         if(saliencyMap.size() == timeWindow){

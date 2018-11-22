@@ -27,6 +27,7 @@ public class CST_AttMod_App {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+    	// removing previous .txt files
     	File folder = new File(".");
     	for (File f : folder.listFiles()) {
     		if(f.getName().endsWith(".txt")) {

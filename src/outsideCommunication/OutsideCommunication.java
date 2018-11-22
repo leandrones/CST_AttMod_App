@@ -21,6 +21,7 @@ import CommunicationInterface.MotorI;
 import CommunicationInterface.SensorI;
 import coppelia.CharWA;
 import coppelia.FloatWA;
+import outsideCommunication.OrientationGTVrep;
 
 /**
  *

@@ -74,6 +74,9 @@ public class SonarVrep implements SensorI{
             }
                 
         }
+        // SYNC
+ 		if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+ 			vrep.simxSynchronousTrigger(clientID);
         // System.out.println("\u001B[36m"+"sonar data\n"+sonarData.sonar_readings);
         
         printToFile(sonarData.sonar_readings);

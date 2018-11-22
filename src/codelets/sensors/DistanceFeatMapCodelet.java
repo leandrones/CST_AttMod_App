@@ -45,7 +45,6 @@ public class DistanceFeatMapCodelet extends FeatMapCodelet {
 
     @Override
     public void proc() {
-    	while(!Lock.canRun()) {}
         try {
             Thread.sleep(50);
         } catch (Exception e) {

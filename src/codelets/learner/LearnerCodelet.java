@@ -53,6 +53,8 @@ public class LearnerCodelet extends Codelet
     private int timeWindow;
     private int sensorDimension;
     
+    private float vel = 2f;
+    
 
 	
 	public LearnerCodelet (OutsideCommunication outc, int tWindow, int sensDim) {
@@ -144,7 +146,11 @@ public class LearnerCodelet extends Codelet
 	@Override
 	public void proc() {
 		
-		while(!Lock.canRun()) {}
+		try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
 		String state = "-1";
 		
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
@@ -179,8 +185,8 @@ public class LearnerCodelet extends Codelet
 			// Apply action
 			if (actionToTake == "Move Foward") {
 				// Sets leftMototMO and right to velocity proportional to winner feature
-				leftMotorMO.setI(2f);
-				rightMotorMO.setI(2f);
+				leftMotorMO.setI(vel);
+				rightMotorMO.setI(vel);
 				
 			}
 			else if (actionToTake == "Turn to Winner") {
@@ -188,11 +194,30 @@ public class LearnerCodelet extends Codelet
 				Float pioneer_orientation = (Float) oc.pioneer_orientation.getData();
 				// get winner orientation
 				Float winner_orientation = (Float) oc.sonar_orientations.get(winnerIndex).getData();
-				//Fazer a diferença dos angulos e setar velocidades nas rotas corretamente
-				//ex: andar por 2 s (tempo definido no Motor Codelete) x angulos -- qual a velocidade em cada roda? (uma zero e a outra v)
+
 				Float diff = pioneer_orientation - winner_orientation;
-//				System.out.println("Differene for winner "+winnerIndex+">"+diff);
 				
+				if (diff < 0) {
+					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
+					// Target is on the left of robot: rotate right motor
+					leftMotorMO.setI(0f);
+					rightMotorMO.setI(1f);
+					
+				}
+				else if (diff > 0) {
+					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
+					// Target is on the right of robot: rotate left motor
+					leftMotorMO.setI(1f);
+					rightMotorMO.setI(0f);
+					
+				}
+				
+				
+			}
+			// Do nothing
+			else {
+				leftMotorMO.setI(0f);
+				rightMotorMO.setI(0f);
 			}
 		}
 
@@ -207,11 +232,13 @@ public class LearnerCodelet extends Codelet
 
 		// check if crashed winner
 		if (sonarReadings.sonar_readings.get(winnerIndex) > CRASH_TRESHOLD) {
+			System.out.println("Crashed winner!");
 			return 10d;
 		}
 		// check if crashed other thing
 		for (int i=0; i < sensorDimension; i++) {
 			if (i != winnerIndex && sonarReadings.sonar_readings.get(i) > CRASH_TRESHOLD) {
+				System.out.println("Crashed something!");
 				return -10d;
 			} 
 		}

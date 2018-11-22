@@ -178,7 +178,7 @@ public class AgentMind extends Mind {
 //        ////////////////////////////////////////////
 //        //Codelets
 //        ////////////////////////////////////////////
-//        
+////        
         //Motors
         Codelet motors = new MotorCodelet(oc.right_motor, oc.left_motor);
         motors.addInputs(motorMOs);
@@ -280,6 +280,8 @@ public class AgentMind extends Mind {
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
+        
+     
 	// Start Cognitive Cycle
 	start(); 
 	

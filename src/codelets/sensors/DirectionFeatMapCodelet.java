@@ -49,7 +49,6 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
 
     @Override
     public void proc() {
-    	while(!Lock.canRun()){}
         try {
             Thread.sleep(50);
         } catch (Exception e) {
@@ -259,6 +258,7 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
 
         for (int j = 0; j < sonardimension; j++) {
             directionFM_t.set(j, max_array[j]);
+//        	 directionFM_t.set(j, 1f);
 //                // System.out.println("\u001B[31m"+"direct fm "+directionFM_t.get(j)+" t="+t+" j="+j);
         }
         

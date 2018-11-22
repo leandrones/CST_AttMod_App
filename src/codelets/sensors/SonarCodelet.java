@@ -42,7 +42,6 @@ public class SonarCodelet extends Codelet {
 
     @Override
     public void proc() {
-//    	while(!Lock.canRun()) {}
         SonarData sonarData = (SonarData) sonar.getData();
 
         sonar_read.setI(sonarData);

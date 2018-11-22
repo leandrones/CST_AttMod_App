@@ -89,7 +89,11 @@ public class DecisionMakingCodelet extends Codelet{
 
     @Override
     public void proc() {
-        while(!Lock.canRun()) {}
+    	try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
         //winner computation
         float max = 0;
         int max_index = -1;

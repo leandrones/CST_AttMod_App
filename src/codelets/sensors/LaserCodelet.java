@@ -41,7 +41,6 @@ public class LaserCodelet extends Codelet {
 
     @Override
     public void proc() {
-    	while(!Lock.canRun()) {}
         laser_read.setI(laser.getData());
         
         //// System.out.println("laser read: "+laser_read.toString());

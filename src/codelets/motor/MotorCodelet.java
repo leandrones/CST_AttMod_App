@@ -49,32 +49,16 @@ public class MotorCodelet extends Codelet {
 
     @Override
     public void proc() {
+    	try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+    	
     	String action = (String) motorActionMO.getI();
-    	if (action == "Move Foward") {// || action == "Turn to Winner") {
-    		
-    		System.out.println("Setting lock");
-    		Lock.setCanRun(false);
-    		// Setting speed
-    		rm.setSpeed((float) rm_speed_MO.getI());
-            lm.setSpeed((float) lm_speed_MO.getI());
-            
-            // Sleeps to complete movement
-    		try {
-              Thread.sleep(MOVEMENT_TIME);
-    		} catch (Exception e) {
-              Thread.currentThread().interrupt();
-    		}
+    	rm.setSpeed((float) rm_speed_MO.getI());
+        lm.setSpeed((float) lm_speed_MO.getI());
     	
-    		Lock.setCanRun(true);
-    		System.out.println("Done lock");
-    		// Stopping robot
-    		rm.setSpeed(0f);
-    		lm.setSpeed(0f);
-    		
-    	
-			
-		}        
-        
     }
     
 }

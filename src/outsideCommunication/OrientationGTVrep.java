@@ -35,7 +35,7 @@ public class OrientationGTVrep implements SensorI {
 	@Override
 	public Float getData() {
 		if (vrep.simxGetObjectOrientation(clientID, handle.getValue(), -1, angles, remoteApi.simx_opmode_buffer) == remoteApi.simx_return_ok) {		    
-		    // returns gama angle
+		    // returns gamma angle
 			return angles.getArray()[2];
 		}
 		return null;

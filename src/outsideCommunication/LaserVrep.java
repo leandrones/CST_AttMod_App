@@ -78,7 +78,9 @@ public class LaserVrep implements SensorI {
         Collections.reverse(laser_data);
         
         // System.out.print("\u001B[31m"+"laser data"+laser_data);
-        
+        // SYNC
+        if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+  			vrep.simxSynchronousTrigger(clientID);
         printToFile(laser_data);
         
 
