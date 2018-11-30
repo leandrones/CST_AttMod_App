@@ -267,19 +267,19 @@ public class LearnerCodelet extends Codelet
 				Float normVal = (lastLine.get(i)-min)/(max-min);
 
 				// Getting discrete value
-				if (normVal < 0.2) {
+				if (normVal <= 0.2) {
 					discreteVal = 0;
 				}
-				else if (normVal < 0.4) {
+				else if (normVal <= 0.4) {
 					discreteVal = 1;
 				}
-				else if (normVal < 0.6) {
+				else if (normVal <= 0.6) {
 					discreteVal = 2;
 				}
-				else if (normVal < 0.8) {
+				else if (normVal <= 0.8) {
 					discreteVal = 3;
 				}
-				else if (normVal < 1) {
+				else if (normVal <= 1) {
 					discreteVal = 4;
 				}
 				
