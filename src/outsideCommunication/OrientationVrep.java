@@ -16,30 +16,32 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
-public class OrientationGTVrep implements SensorI {
+public class OrientationVrep implements SensorI {
 	private int time_graph;
 	
 	private remoteApi vrep;
     private int clientID;
     private FloatWA angles;
     private IntW handle;
+
 	
-	public  OrientationGTVrep( int clientID, IntW handle, remoteApi vrep) {
+	public  OrientationVrep( int clientID, IntW handle, remoteApi vrep) {
 		this.time_graph = 0;
         this.handle = handle;
+
         this.vrep = vrep;
         this.clientID = clientID;
         this.angles = new FloatWA(3);
 	}
 
+
 	@Override
-	public Float getData() {
+	public Object getData() {
 		if (vrep.simxGetObjectOrientation(clientID, handle.getValue(), -1, angles, remoteApi.simx_opmode_buffer) == remoteApi.simx_return_ok) {		    
 		    // returns gamma angle
 			return angles.getArray()[2];
 		}
 		return null;
-		
 	}
 
 }

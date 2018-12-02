@@ -34,7 +34,9 @@ public class LearnerCodelet extends Codelet
 {
 
 	private int time_graph;
-	private static float CRASH_TRESHOLD = 0.95f;
+	private static float CRASH_TRESHOLD = 0.07f;
+	
+	private static int MAX_ACTION_NUMBER = 2;
 	
 	private QLearning ql;
     
@@ -55,12 +57,20 @@ public class LearnerCodelet extends Codelet
     
     private float vel = 2f;
     
-
+    private int global_reward;
+    private int action_number;
+    private int experiment_number;
 	
 	public LearnerCodelet (OutsideCommunication outc, int tWindow, int sensDim) {
 		
 		super();
 		time_graph = 0;
+		
+		global_reward = 0;
+		
+		action_number = 0;
+		
+		experiment_number = 1;
 		
 		ArrayList<String> allActionsList  = new ArrayList<>(Arrays.asList("Move Foward", "Do nothing", "Turn to Winner"));
 		// States are 0 1 2 ... 5^8-1
@@ -151,6 +161,7 @@ public class LearnerCodelet extends Codelet
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
+		System.out.println("Learning");
 		String state = "-1";
 		
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
@@ -161,7 +172,9 @@ public class LearnerCodelet extends Codelet
 			if (!actionsList.isEmpty()) {
 				// Find reward of the current state, given previous  winner 
 				
-				Double reward = find_reward(winnerIndex);
+				check_stop_experiment();
+				Double reward = 1d;
+				global_reward += reward;
 				// Gets last action taken
 				String lastAction = actionsList.get(actionsList.size() - 1);
 				// Gets last state that was in
@@ -179,6 +192,7 @@ public class LearnerCodelet extends Codelet
 			String actionToTake = ql.getAction(state);
 			actionsList.add(actionToTake);
 			
+			action_number++;
 			
 			motorActionMO.setI(actionToTake);
 			
@@ -198,14 +212,14 @@ public class LearnerCodelet extends Codelet
 				Float diff = pioneer_orientation - winner_orientation;
 				
 				if (diff < 0) {
-					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
+//					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
 					// Target is on the left of robot: rotate right motor
 					leftMotorMO.setI(0f);
 					rightMotorMO.setI(1f);
 					
 				}
 				else if (diff > 0) {
-					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
+//					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
 					// Target is on the right of robot: rotate left motor
 					leftMotorMO.setI(1f);
 					rightMotorMO.setI(0f);
@@ -221,30 +235,40 @@ public class LearnerCodelet extends Codelet
 			}
 		}
 
-		printToFile(state, "states.txt");
+		time_graph = printToFile(state, "states.txt", time_graph, true);
 		
 		
 	}
 	
 	
 	
-	public double find_reward(Integer winnerIndex) {
-
-		// check if crashed winner
-		if (sonarReadings.sonar_readings.get(winnerIndex) > CRASH_TRESHOLD) {
-			System.out.println("Crashed winner!");
-			return 10d;
+	public void check_stop_experiment() {
+		
+		boolean crashed = false;
+		if (!sonarReadings.sonar_readings.isEmpty()){
+			// check if crashed anything
+			for (int i=0; i < sensorDimension; i++) {
+				float reading = sonarReadings.sonar_readings.get(i);
+				if ( reading != 0.0f & reading < CRASH_TRESHOLD) {
+					System.out.println("Crashed something!");
+					crashed = true;
+					break;
+				} 
+			}
 		}
-		// check if crashed other thing
-		for (int i=0; i < sensorDimension; i++) {
-			if (i != winnerIndex && sonarReadings.sonar_readings.get(i) > CRASH_TRESHOLD) {
-				System.out.println("Crashed something!");
-				return -10d;
-			} 
+		if (action_number >= MAX_ACTION_NUMBER | crashed) {
+			System.out.println("Max number of actions or crashed");
+			action_number = 0;
+			experiment_number = printToFile(global_reward, "rewards.txt", experiment_number, false);
+			oc.reset_robot_position();
+			try {
+	            Thread.sleep(500);
+	        } catch (Exception e) {
+	            Thread.currentThread().interrupt();
+	        }
 		}
-		// nothing
-		return 0d;
-			
+		
+		
 	}
 	
 	// Normalize and transform a salience map into one state
@@ -292,24 +316,25 @@ public class LearnerCodelet extends Codelet
 		}
 		
 	
-	private void printToFile(Object object,String filename){
+	private int printToFile(Object object,String filename, int counter, boolean check){
         
-        if (time_graph < 50) {
+        if (!check | counter < 50) {
 	        try(FileWriter fw = new FileWriter(filename,true);
 	            BufferedWriter bw = new BufferedWriter(fw);
 	            PrintWriter out = new PrintWriter(bw))
 	        {
-	            out.println(time_graph+" "+ object);
-	            time_graph++;
+	            out.println(counter+" "+ object);
+	            
 	            out.close();
+	            return ++counter;
 	        } catch (IOException e) {
 	            e.printStackTrace();
 	        }
         }
-        
-        
-    }
+      
+		return counter;
 
+	}
 	
 
 }

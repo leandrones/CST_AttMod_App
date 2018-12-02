@@ -21,7 +21,7 @@ import CommunicationInterface.MotorI;
 import CommunicationInterface.SensorI;
 import coppelia.CharWA;
 import coppelia.FloatWA;
-import outsideCommunication.OrientationGTVrep;
+import outsideCommunication.OrientationVrep;
 
 /**
  *
@@ -31,6 +31,7 @@ public class OutsideCommunication {
 
 	public remoteApi vrep;
 	public int clientID;
+	public IntW pioneer_handle;
 	public MotorI right_motor, left_motor;
 	public SensorI sonar;
 	public SensorI laser;
@@ -125,9 +126,9 @@ public class OutsideCommunication {
 
 		laser = new LaserVrep(clientID, signal_laser_value, vrep);
 
-		// Ground Truth Orientation initialization
-		IntW pioneer_handle = new IntW(-1);
-		vrep.simxGetObjectHandle(clientID, "Pioneer_p3dx", pioneer_handle, remoteApi.simx_opmode_blocking);
+		// Orientation initialization
+		pioneer_handle = new IntW(-1);
+		vrep.simxGetObjectHandle(clientID, "Pioneer_p3dx", pioneer_handle, remoteApi.simx_opmode_oneshot_wait);
 		if (pioneer_handle.getValue() == -1)
 			System.out.println("Error on initialing orientation ground truth: ");
 
@@ -136,10 +137,32 @@ public class OutsideCommunication {
 		for (int i = 0; i < 8; i++) {
 			vrep.simxGetObjectOrientation(clientID, sonar_handles[i].getValue(), -1, angles,
 					remoteApi.simx_opmode_streaming);
-			sonar_orientations.add(new OrientationGTVrep(clientID, sonar_handles[i], vrep));
+			sonar_orientations.add(new OrientationVrep(clientID, sonar_handles[i], vrep));
 		}
-		pioneer_orientation = new OrientationGTVrep(clientID, pioneer_handle, vrep);
+		pioneer_orientation = new OrientationVrep(clientID, pioneer_handle, vrep);
 
+	}
+	
+	public void reset_robot_position() {
+		System.out.println("Resseting position");
+		vrep.simxPauseCommunication(clientID, true);
+		FloatWA position = initFloatWA();
+
+		vrep.simxSetObjectPosition(clientID, pioneer_handle.getValue(), -1, position,
+                vrep.simx_opmode_oneshot);
+//		vrep.simxSetObjectOrientation(clientID, pioneer_handle.getValue(), -1, [0, 0, yaw[i]], vrep.simx_opmode_oneshot)
+		vrep.simxPauseCommunication(clientID, false);
+		vrep.simxSynchronousTrigger(clientID);
+
+	}
+	
+	public FloatWA initFloatWA() {
+		FloatWA position = new FloatWA(3);
+		float[] pos = position.getArray();
+		pos[0] = 0.0f;
+		pos[1] = 0.0f;
+		pos[2] = 0.138f;
+		return position;
 	}
 
 }
