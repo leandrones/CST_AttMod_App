@@ -36,7 +36,7 @@ public class LearnerCodelet extends Codelet
 	private int time_graph;
 	private static float CRASH_TRESHOLD = 0.07f;
 	
-	private static int MAX_ACTION_NUMBER = 2;
+	private static int MAX_ACTION_NUMBER = 300;
 	
 	private QLearning ql;
     
@@ -161,7 +161,7 @@ public class LearnerCodelet extends Codelet
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
-		System.out.println("Learning");
+		System.out.println("Reward: "+global_reward);
 		String state = "-1";
 		
 		if (!saliencyMap.isEmpty() && !winnersList.isEmpty()) {
@@ -196,11 +196,13 @@ public class LearnerCodelet extends Codelet
 			
 			motorActionMO.setI(actionToTake);
 			
+			System.out.println("Action "+actionToTake);
+			
 			// Apply action
 			if (actionToTake == "Move Foward") {
 				// Sets leftMototMO and right to velocity proportional to winner feature
-				leftMotorMO.setI(vel);
-				rightMotorMO.setI(vel);
+				leftMotorMO.setI(4.0f);
+				rightMotorMO.setI(4.0f);
 				
 			}
 			else if (actionToTake == "Turn to Winner") {
@@ -215,13 +217,13 @@ public class LearnerCodelet extends Codelet
 //					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
 					// Target is on the left of robot: rotate right motor
 					leftMotorMO.setI(0f);
-					rightMotorMO.setI(1f);
+					rightMotorMO.setI(3f);
 					
 				}
 				else if (diff > 0) {
 //					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
 					// Target is on the right of robot: rotate left motor
-					leftMotorMO.setI(1f);
+					leftMotorMO.setI(3f);
 					rightMotorMO.setI(0f);
 					
 				}
@@ -260,6 +262,9 @@ public class LearnerCodelet extends Codelet
 			System.out.println("Max number of actions or crashed");
 			action_number = 0;
 			experiment_number = printToFile(global_reward, "rewards.txt", experiment_number, false);
+			if (experiment_number > 50) {
+				System.exit(0);
+			}
 			oc.reset_robot_position();
 			try {
 	            Thread.sleep(500);

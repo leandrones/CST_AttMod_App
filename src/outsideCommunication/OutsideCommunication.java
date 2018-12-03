@@ -13,6 +13,7 @@
 package outsideCommunication;
 
 import coppelia.IntW;
+import coppelia.IntWA;
 import coppelia.remoteApi;
 
 import java.util.ArrayList;
@@ -146,22 +147,32 @@ public class OutsideCommunication {
 	public void reset_robot_position() {
 		System.out.println("Resseting position");
 		vrep.simxPauseCommunication(clientID, true);
-		FloatWA position = initFloatWA();
-
+		FloatWA position = initFloatWA(false);
+		vrep.simxCallScriptFunction(clientID, "Pioneer_p3dx", vrep.sim_scripttype_childscript, "reset",  null , 
+				null ,null , null , null, null , null, null, vrep.simx_opmode_blocking);
 		vrep.simxSetObjectPosition(clientID, pioneer_handle.getValue(), -1, position,
                 vrep.simx_opmode_oneshot);
-//		vrep.simxSetObjectOrientation(clientID, pioneer_handle.getValue(), -1, [0, 0, yaw[i]], vrep.simx_opmode_oneshot)
+		FloatWA angles = initFloatWA(true);
+		vrep.simxSetObjectOrientation(clientID, pioneer_handle.getValue(), -1, angles, vrep.simx_opmode_oneshot);
 		vrep.simxPauseCommunication(clientID, false);
 		vrep.simxSynchronousTrigger(clientID);
 
 	}
 	
-	public FloatWA initFloatWA() {
+	public FloatWA initFloatWA(boolean orient) {
 		FloatWA position = new FloatWA(3);
 		float[] pos = position.getArray();
-		pos[0] = 0.0f;
-		pos[1] = 0.0f;
-		pos[2] = 0.138f;
+		
+		if (orient) {
+			pos[0] = 0.0f;
+			pos[1] = 0.0f;
+			pos[2] = (float) Math.random() * 360;
+		}
+		else {
+			pos[0] = (float) Math.random() * 1.5f;
+			pos[1] = (float) Math.random() * 1.5f;
+			pos[2] = 0.138f;
+		}
 		return position;
 	}
 
