@@ -44,4 +44,11 @@ public class OrientationVrep implements SensorI {
 		return null;
 	}
 
+
+	@Override
+	public void resetData() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -102,5 +102,11 @@ public class LaserVrep implements SensorI {
             }
         }
     }
+
+	@Override
+	public void resetData() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

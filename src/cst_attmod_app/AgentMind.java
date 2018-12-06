@@ -46,7 +46,7 @@ public class AgentMind extends Mind {
     public static final int buffersize = 50;
     public static final int laserdimension = 182;
     public static final int sonardimension = 8;
-    public AgentMind(OutsideCommunication oc){
+    public AgentMind(OutsideCommunication oc, String mode){
         
         super();
         
@@ -257,7 +257,7 @@ public class AgentMind extends Mind {
         dec_mak_cod.addOutput(attMapMO);
         insertCodelet(dec_mak_cod);
         
-        Codelet learner_cod = new LearnerCodelet(oc, buffersize, sonardimension);
+        Codelet learner_cod = new LearnerCodelet(oc, buffersize, sonardimension, mode);
         learner_cod.addInput(salMapMO);
         learner_cod.addInput(winnersMO);
         learner_cod.addInput(sonar_read);

@@ -98,5 +98,11 @@ public class SonarVrep implements SensorI{
             }
         }
     }
+
+	@Override
+	public void resetData() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

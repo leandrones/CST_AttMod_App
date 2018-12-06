@@ -37,6 +37,7 @@ public class OutsideCommunication {
 	public SensorI sonar;
 	public SensorI laser;
 	public SensorI pioneer_orientation;
+	public SensorI pioneer_position;
 	public ArrayList<SensorI> sonar_orientations;
 
 	public OutsideCommunication() {
@@ -141,39 +142,10 @@ public class OutsideCommunication {
 			sonar_orientations.add(new OrientationVrep(clientID, sonar_handles[i], vrep));
 		}
 		pioneer_orientation = new OrientationVrep(clientID, pioneer_handle, vrep);
+		pioneer_position = new PositionVrep(clientID, pioneer_handle, vrep);
 
 	}
 	
-	public void reset_robot_position() {
-		System.out.println("Resseting position");
-		vrep.simxPauseCommunication(clientID, true);
-		FloatWA position = initFloatWA(false);
-		vrep.simxCallScriptFunction(clientID, "Pioneer_p3dx", vrep.sim_scripttype_childscript, "reset",  null , 
-				null ,null , null , null, null , null, null, vrep.simx_opmode_blocking);
-		vrep.simxSetObjectPosition(clientID, pioneer_handle.getValue(), -1, position,
-                vrep.simx_opmode_oneshot);
-		FloatWA angles = initFloatWA(true);
-		vrep.simxSetObjectOrientation(clientID, pioneer_handle.getValue(), -1, angles, vrep.simx_opmode_oneshot);
-		vrep.simxPauseCommunication(clientID, false);
-		vrep.simxSynchronousTrigger(clientID);
-
-	}
 	
-	public FloatWA initFloatWA(boolean orient) {
-		FloatWA position = new FloatWA(3);
-		float[] pos = position.getArray();
-		
-		if (orient) {
-			pos[0] = 0.0f;
-			pos[1] = 0.0f;
-			pos[2] = (float) Math.random() * 360;
-		}
-		else {
-			pos[0] = (float) Math.random() * 1.5f;
-			pos[1] = (float) Math.random() * 1.5f;
-			pos[2] = 0.138f;
-		}
-		return position;
-	}
 
 }

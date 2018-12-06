@@ -19,6 +19,7 @@ import br.unicamp.cst.core.entities.RawMemory;
 import br.unicamp.cst.core.exceptions.CodeletActivationBoundsException;
 import br.unicamp.cst.memory.WorkingStorage;
 import codelets.motor.Lock;
+import coppelia.FloatWA;
 import br.unicamp.cst.learning.QLearning;
 import br.unicamp.cst.learning.QLearning;
 import outsideCommunication.OutsideCommunication;
@@ -36,7 +37,9 @@ public class LearnerCodelet extends Codelet
 	private int time_graph;
 	private static float CRASH_TRESHOLD = 0.07f;
 	
-	private static int MAX_ACTION_NUMBER = 300;
+	private static int MAX_ACTION_NUMBER = 10;
+	
+	private static int MAX_EXPERIMENTS_NUMBER = 1;
 	
 	private QLearning ql;
     
@@ -60,8 +63,10 @@ public class LearnerCodelet extends Codelet
     private int global_reward;
     private int action_number;
     private int experiment_number;
+    
+    private String mode;
 	
-	public LearnerCodelet (OutsideCommunication outc, int tWindow, int sensDim) {
+	public LearnerCodelet (OutsideCommunication outc, int tWindow, int sensDim, String mode) {
 		
 		super();
 		time_graph = 0;
@@ -78,20 +83,26 @@ public class LearnerCodelet extends Codelet
 		// QLearning initialization
 		ql = new QLearning();
 		ql.setActionsList(allActionsList);
-
+		// learning mode ---> build q table from scratch
+		if (mode.equals("learning")) {
 		// Initialize QTable to 0
-		for (int i=0; i < allStatesList.size(); i ++) {
-			for (int j=0; j < allActionsList.size(); j++) {
-				ql.setQ(0, allStatesList.get(i), allActionsList.get(j));
-			
+			for (int i=0; i < allStatesList.size(); i ++) {
+				for (int j=0; j < allActionsList.size(); j++) {
+					ql.setQ(0, allStatesList.get(i), allActionsList.get(j));
+				
+				}
 			}
 		}
-		//ql.printQ();
+		// exploring mode ---> reloads q table 
+		else {
+			ql.recoverQ();
+		}
 		
 		
 		oc = outc;
 		timeWindow = tWindow;
         sensorDimension = sensDim;
+        this.mode = mode;
 
 	}
 	
@@ -169,9 +180,8 @@ public class LearnerCodelet extends Codelet
 			Winner lastWinner = (Winner) winnersList.get(winnersList.size() - 1);
 			Integer winnerIndex = lastWinner.featureJ;
 			
-			if (!actionsList.isEmpty()) {
+			if (!actionsList.isEmpty() && mode.equals("learning")) {
 				// Find reward of the current state, given previous  winner 
-				
 				check_stop_experiment();
 				Double reward = 1d;
 				global_reward += reward;
@@ -199,13 +209,13 @@ public class LearnerCodelet extends Codelet
 			System.out.println("Action "+actionToTake);
 			
 			// Apply action
-			if (actionToTake == "Move Foward") {
+			if (actionToTake.equals("Move Foward")) {
 				// Sets leftMototMO and right to velocity proportional to winner feature
 				leftMotorMO.setI(4.0f);
 				rightMotorMO.setI(4.0f);
 				
 			}
-			else if (actionToTake == "Turn to Winner") {
+			else if (actionToTake.equals("Turn to Winner")) {
 				// get robot orientation
 				Float pioneer_orientation = (Float) oc.pioneer_orientation.getData();
 				// get winner orientation
@@ -213,14 +223,14 @@ public class LearnerCodelet extends Codelet
 
 				Float diff = pioneer_orientation - winner_orientation;
 				
-				if (diff < 0) {
+				if (diff.floatValue() < 0) {
 //					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
 					// Target is on the left of robot: rotate right motor
 					leftMotorMO.setI(0f);
 					rightMotorMO.setI(3f);
 					
 				}
-				else if (diff > 0) {
+				else if (diff.floatValue() > 0) {
 //					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
 					// Target is on the right of robot: rotate left motor
 					leftMotorMO.setI(3f);
@@ -238,7 +248,9 @@ public class LearnerCodelet extends Codelet
 		}
 
 		time_graph = printToFile(state, "states.txt", time_graph, true);
-		
+		if (mode.equals("exploring")) {
+			oc.pioneer_position.getData();
+		}
 		
 	}
 	
@@ -262,10 +274,11 @@ public class LearnerCodelet extends Codelet
 			System.out.println("Max number of actions or crashed");
 			action_number = 0;
 			experiment_number = printToFile(global_reward, "rewards.txt", experiment_number, false);
-			if (experiment_number > 50) {
+			if (experiment_number > MAX_EXPERIMENTS_NUMBER) {
+				ql.storeQ();
 				System.exit(0);
 			}
-			oc.reset_robot_position();
+			oc.pioneer_position.resetData();
 			try {
 	            Thread.sleep(500);
 	        } catch (Exception e) {
@@ -323,7 +336,7 @@ public class LearnerCodelet extends Codelet
 	
 	private int printToFile(Object object,String filename, int counter, boolean check){
         
-        if (!check | counter < 50) {
+        if (!check || counter < MAX_EXPERIMENTS_NUMBER) {
 	        try(FileWriter fw = new FileWriter(filename,true);
 	            BufferedWriter bw = new BufferedWriter(fw);
 	            PrintWriter out = new PrintWriter(bw))
@@ -340,7 +353,7 @@ public class LearnerCodelet extends Codelet
 		return counter;
 
 	}
-	
+		
 
 }
 
