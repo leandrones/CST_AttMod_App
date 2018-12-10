@@ -74,7 +74,7 @@ public class PositionVrep implements SensorI {
 	            BufferedWriter bw = new BufferedWriter(fw);
 	            PrintWriter out = new PrintWriter(bw))
 	        {
-	            out.println(position.getArray()[0] + " , " + position.getArray()[1]);
+	            out.println(position.getArray()[0] + " " + position.getArray()[1]);
 	            out.close();
 	        } catch (IOException e) {
 	            e.printStackTrace();

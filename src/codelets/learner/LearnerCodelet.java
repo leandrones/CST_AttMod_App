@@ -37,9 +37,9 @@ public class LearnerCodelet extends Codelet
 	private int time_graph;
 	private static float CRASH_TRESHOLD = 0.07f;
 	
-	private static int MAX_ACTION_NUMBER = 10;
+	private static int MAX_ACTION_NUMBER = 500;
 	
-	private static int MAX_EXPERIMENTS_NUMBER = 1;
+	private static int MAX_EXPERIMENTS_NUMBER = 100;
 	
 	private QLearning ql;
     
@@ -77,7 +77,7 @@ public class LearnerCodelet extends Codelet
 		
 		experiment_number = 1;
 		
-		ArrayList<String> allActionsList  = new ArrayList<>(Arrays.asList("Move Foward", "Do nothing", "Turn to Winner"));
+		ArrayList<String> allActionsList  = new ArrayList<>(Arrays.asList("Move Foward", "Do nothing", "Turn away from Winner"));
 		// States are 0 1 2 ... 5^8-1
 		ArrayList<String> allStatesList = new ArrayList<>(Arrays.asList(IntStream.rangeClosed(0, (int)Math.pow(5, 8)-1).mapToObj(String::valueOf).toArray(String[]::new)));
 		// QLearning initialization
@@ -95,7 +95,13 @@ public class LearnerCodelet extends Codelet
 		}
 		// exploring mode ---> reloads q table 
 		else {
-			ql.recoverQ();
+			try {
+				ql.recoverQ();
+			}
+			catch (Exception e) {
+				System.out.println("ERROR LOADING QTABLE");
+				System.exit(1);
+			}
 		}
 		
 		
@@ -182,7 +188,7 @@ public class LearnerCodelet extends Codelet
 			
 			if (!actionsList.isEmpty() && mode.equals("learning")) {
 				// Find reward of the current state, given previous  winner 
-				check_stop_experiment();
+				check_stop_experiment(mode);
 				Double reward = 1d;
 				global_reward += reward;
 				// Gets last action taken
@@ -215,27 +221,42 @@ public class LearnerCodelet extends Codelet
 				rightMotorMO.setI(4.0f);
 				
 			}
-			else if (actionToTake.equals("Turn to Winner")) {
-				// get robot orientation
-				Float pioneer_orientation = (Float) oc.pioneer_orientation.getData();
-				// get winner orientation
-				Float winner_orientation = (Float) oc.sonar_orientations.get(winnerIndex).getData();
+			else if (actionToTake.equals("Turn away from Winner")) {
+//				// get robot orientation
+//				Float pioneer_orientation = (Float) oc.pioneer_orientation.getData();
+//				// get winner orientation
+//				Float winner_orientation = (Float) oc.sonar_orientations.get(winnerIndex).getData();
 
-				Float diff = pioneer_orientation - winner_orientation;
-				
-				if (diff.floatValue() < 0) {
-//					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
-					// Target is on the left of robot: rotate right motor
-					leftMotorMO.setI(0f);
-					rightMotorMO.setI(3f);
-					
-				}
-				else if (diff.floatValue() > 0) {
-//					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
-					// Target is on the right of robot: rotate left motor
-					leftMotorMO.setI(3f);
+//				Float diff = pioneer_orientation - winner_orientation;
+//				
+//				if (diff.floatValue() > 0) {
+//					
+////					System.out.println("Winner on the left! (diff NEG). Seeting left right speed");
+//					// Target is on the left of robot: rotate right motor
+//					leftMotorMO.setI(0f);
+//					rightMotorMO.setI(2f);
+//					
+//				}
+//				else if (diff.floatValue() < 0) {
+////					System.out.println("Winner on the right! (diff POS). Seeting left left speed");
+//					// Target is on the right of robot: rotate left motor
+//					leftMotorMO.setI(2f);
+//					rightMotorMO.setI(0f);
+//					
+//				}
+//				else {
+//					leftMotorMO.setI(0f);
+//					rightMotorMO.setI(0f);
+//				}
+				// winner on the left of robot -> turn right
+				if (winnerIndex <= 4) {
+					leftMotorMO.setI(2f);
 					rightMotorMO.setI(0f);
-					
+				}
+				// winner on the right of robot -> turn left
+				else {
+					leftMotorMO.setI(0f);
+					rightMotorMO.setI(2f);
 				}
 				
 				
@@ -250,13 +271,15 @@ public class LearnerCodelet extends Codelet
 		time_graph = printToFile(state, "states.txt", time_graph, true);
 		if (mode.equals("exploring")) {
 			oc.pioneer_position.getData();
+			check_stop_experiment(mode);
+
 		}
 		
 	}
 	
 	
 	
-	public void check_stop_experiment() {
+	public void check_stop_experiment(String mode) {
 		
 		boolean crashed = false;
 		if (!sonarReadings.sonar_readings.isEmpty()){
@@ -270,7 +293,10 @@ public class LearnerCodelet extends Codelet
 				} 
 			}
 		}
-		if (action_number >= MAX_ACTION_NUMBER | crashed) {
+		if (mode.equals("exploring") && crashed) {
+			System.exit(0);
+		}
+		else if (mode.equals("learning") && (action_number >= MAX_ACTION_NUMBER || crashed)) {
 			System.out.println("Max number of actions or crashed");
 			action_number = 0;
 			experiment_number = printToFile(global_reward, "rewards.txt", experiment_number, false);

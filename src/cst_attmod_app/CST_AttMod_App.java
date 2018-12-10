@@ -36,7 +36,7 @@ public class CST_AttMod_App {
     	}
         OutsideCommunication oc = new OutsideCommunication();
         oc.start();
-        AgentMind am = new AgentMind(oc, "learning");
+        AgentMind am = new AgentMind(oc, "exploring");
        
         
     }
