@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
-    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
-    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/codelets/sensors/DirectionFeatMapCodelet.java</file>
-            <file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/CommunicationInterface/SensorI.java</file>
-            <file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/CommunicationInterface/MotorI.java</file>
-            <file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/codelets/motor/MotorCodelet.java</file>
-        </group>
-    </open-files>
+<project-private
+	xmlns="http://www.netbeans.org/ns/project-private/1">
+	<editor-bookmarks
+		xmlns="http://www.netbeans.org/ns/editor-bookmarks/2"
+		lastBookmarkId="0" />
+	<open-files
+		xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+		<group>
+			<file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/codelets/sensors/DirectionFeatMapCodelet.java</file>
+			<file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/CommunicationInterface/SensorI.java</file>
+			<file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/CommunicationInterface/MotorI.java</file>
+			<file>file:/media/leandro/5076F34376F3287C/linux/ubuntu/netbeans/CST_AttMod_App/src/codelets/motor/MotorCodelet.java</file>
+		</group>
+	</open-files>
 </project-private>

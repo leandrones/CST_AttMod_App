@@ -40,8 +40,11 @@ public class MotorVrep implements MotorI {
     @Override
     public int setSpeed(float speed) {
         this.speed = speed;
-                
-        return vrep.simxSetJointTargetVelocity(clientID, motor_handle, speed, remoteApi.simx_opmode_streaming);
+       if(! (vrep.simxSetJointTargetVelocity(clientID, motor_handle, speed, remoteApi.simx_opmode_oneshot) == remoteApi.simx_error_noerror)) {
+    	   return 0;
+       }
+       else return 1;
+        
     }
     
 }

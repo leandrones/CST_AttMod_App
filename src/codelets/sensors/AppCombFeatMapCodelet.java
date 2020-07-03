@@ -94,7 +94,7 @@ public class AppCombFeatMapCodelet extends CombFeatMapCodelet {
 
                 Float weight_val, fmkt_val;
 
-//                    System.out.println("FMKT SIZE "+FMk_t.size());
+//                    // System.out.println("FMKT SIZE "+FMk_t.size());
                 if(k == 1){
                     switch (j) {
                         case 0:
@@ -108,7 +108,7 @@ public class AppCombFeatMapCodelet extends CombFeatMapCodelet {
                             }   break;
                         default:
                             for(int i = 0, l = 23*(j-1)+22; l < 23*j + 22; l++,i++){
-//                                    System.out.println("I "+i + " L "+l+" J "+j);
+//                                    // System.out.println("I "+i + " L "+l+" J "+j);
                                 maximum.set(i, (Float)FMk_t.get(l));
                             }   break;
                     }
@@ -118,18 +118,18 @@ public class AppCombFeatMapCodelet extends CombFeatMapCodelet {
                     fmkt_val = (Float) FMk_t.get(j); 
                 }
 
-                System.out.println("\u001B[34m"+"FMK_t");
-                System.out.println("\u001B[34m"+FMk_t);                    
+                // System.out.println("\u001B[34m"+"FMK_t");
+                // System.out.println("\u001B[34m"+FMk_t);                    
 
                 weight_val = (Float) weight_values.get(k);
                 ctj += weight_val*fmkt_val;
-//                    System.out.println("ctj="+ctj+" fmktval= "+fmkt_val+" k = "+k);
+//                    // System.out.println("ctj="+ctj+" fmktval= "+fmkt_val+" k = "+k);
 
             }
-//                System.out.println("ctj="+ctj);
+//                // System.out.println("ctj="+ctj);
             CFMrow.set(j, ctj);
-            System.out.println("CFM ROW");
-            System.out.println(CFMrow);
+            // System.out.println("CFM ROW");
+            // System.out.println(CFMrow);
         }
         printToFile((ArrayList<Float>) CFMrow);
     }

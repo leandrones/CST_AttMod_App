@@ -15,6 +15,7 @@ package codelets.sensors;
 import CommunicationInterface.SensorI;
 import br.unicamp.cst.core.entities.Codelet;
 import br.unicamp.cst.core.entities.MemoryObject;
+import codelets.motor.Lock;
 import outsideCommunication.SonarData;
 
 /**
@@ -42,19 +43,13 @@ public class SonarCodelet extends Codelet {
     @Override
     public void proc() {
         SonarData sonarData = (SonarData) sonar.getData();
-        
-        try {
-            Thread.sleep(00);
-        } catch (Exception e) {
-            Thread.currentThread().interrupt();
-        }
-        
+
         sonar_read.setI(sonarData);
         
-        //System.out.println(sonar_read.toString());
+//         System.out.println(sonar_read.toString());
         SonarData a = (SonarData) sonar_read.getI();
-//        System.out.println("Sonar detect state = "+a.detect_state.toString());
-//        System.out.println("Sonar value = "+a.sonar_readings);
+//         System.out.println("Sonar detect state = "+a.detect_state.toString());
+//         System.out.println("Sonar value = "+a.sonar_readings);
     }
     
 }

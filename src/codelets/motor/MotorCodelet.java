@@ -27,7 +27,10 @@ public class MotorCodelet extends Codelet {
     private MemoryObject rm_speed_MO, lm_speed_MO; 
     private MotorI rm, lm;
     
+    private int MOVEMENT_TIME = 2000; // 2 seconds
+    
     public MotorCodelet(MotorI rmo, MotorI lmo){
+    	super();
         rm = rmo;
         lm = lmo;
     }
@@ -46,9 +49,16 @@ public class MotorCodelet extends Codelet {
 
     @Override
     public void proc() {
-        rm.setSpeed((float) rm_speed_MO.getI());
+    	try {
+            Thread.sleep(50);
+        } catch (Exception e) {
+            Thread.currentThread().interrupt();
+        }
+    	
+    	String action = (String) motorActionMO.getI();
+    	rm.setSpeed((float) rm_speed_MO.getI());
         lm.setSpeed((float) lm_speed_MO.getI());
-        
+    	
     }
     
 }

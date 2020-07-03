@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -52,7 +53,7 @@ public class LaserVrep implements SensorI {
     public Object getData() {
         try {
             Thread.sleep(50);
-//            System.out.println("\u001B[31m"+"TRY CATCH");
+//            // System.out.println("\u001B[31m"+"TRY CATCH");
         } catch (Exception e) {
             Thread.currentThread().interrupt();
         }
@@ -60,7 +61,7 @@ public class LaserVrep implements SensorI {
             FloatWA laser_data_wa = new FloatWA(signal_laser_value.getLength()/4);
             laser_data_wa.initArrayFromCharArray(signal_laser_value.getArray());
             float data_arr[] = laser_data_wa.getArray();
-//            System.out.println("laserdata size = "+laser_data.size()+" data arr size = "+data_arr.length);
+//            // System.out.println("laserdata size = "+laser_data.size()+" data arr size = "+data_arr.length);
             for (int i = 0; i < 182 && 3*i+1 < data_arr.length; i++) {
                 float temp;
                 temp = (float) (Math.round(data_arr[3*i+1]*100.0)/100.0);
@@ -71,13 +72,18 @@ public class LaserVrep implements SensorI {
                     laser_data.set(i, temp);
                 }
             }
-//            System.out.println(laser_data.get(90));
+
+
         }
         Collections.reverse(laser_data);
         
-        System.out.print("\u001B[31m"+"laser data"+laser_data);
-        
+        // System.out.print("\u001B[31m"+"laser data"+laser_data);
+        // SYNC
+        if (vrep.simxSynchronous(clientID, true) == remoteApi.simx_return_ok)
+  			vrep.simxSynchronousTrigger(clientID);
         printToFile(laser_data);
+        
+
         
         return  laser_data;
     }
@@ -96,5 +102,11 @@ public class LaserVrep implements SensorI {
             }
         }
     }
+
+	@Override
+	public void resetData() {
+		// TODO Auto-generated method stub
+		
+	}
     
 }

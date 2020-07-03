@@ -18,4 +18,5 @@ package CommunicationInterface;
  */
 public interface SensorI {
     public Object getData();
+    public void resetData();
 }

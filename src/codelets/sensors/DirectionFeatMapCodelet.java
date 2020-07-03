@@ -14,6 +14,7 @@ package codelets.sensors;
 
 import br.unicamp.cst.core.entities.MemoryObject;
 import br.unicamp.cst.sensorial.FeatMapCodelet;
+import codelets.motor.Lock;
 import cst_attmod_app.AgentMind;
 import static cst_attmod_app.AgentMind.buffersize;
 import static cst_attmod_app.AgentMind.laserdimension;
@@ -59,7 +60,7 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
         
         List laserDataBuffer,sonarDataBuffer;
         
-//        System.out.println("sensor buffers  "+sensor_buffers);
+//        // System.out.println("sensor buffers  "+sensor_buffers);
         
         laserDataBuffer = (List) laser_bufferMO.getI();
         sonarDataBuffer= (List) sonar_bufferMO.getI();
@@ -86,7 +87,7 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
             
 //        for (int t = 0; t < laserDataBuffer.size()-1 && t < sonarDataBuffer.size()-1; t++) {
             
-//            System.out.println("buffer size "+laserDataBuffer.size());
+//            // System.out.println("buffer size "+laserDataBuffer.size());
             
         //Calculating the function for the laser
         MemoryObject laserDataMO1,laserDataMO2;
@@ -116,9 +117,9 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
             l = (List) mo.getI();
             f = (Float) l.get(90);
 
-            System.out.print("t2= "+t2+ " f= " +f+" ");
+            // System.out.print("t2= "+t2+ " f= " +f+" ");
         }
-        System.out.println("");*/
+        // System.out.println("");*/
 
         for (int j = 0; j < laserData1.size(); j++) {
             Float f1,f2;
@@ -127,17 +128,17 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
             f2 = (Float) laserData2.get(j);
 
 //                if(j == 90)
-//                    System.out.println("\u001B[32m"+"f1= "+f1+" f2= "+f2+" t= "+t);
+//                    // System.out.println("\u001B[32m"+"f1= "+f1+" f2= "+f2+" t= "+t);
 
             temp_direction_laser[t][j] = f2-f1;                
             temp_direction_laser[t][j] /= dt;
             if (temp_direction_laser[t][j] > 0) {
-//                    System.out.println("\u001B[32m"+"f1= "+f1+" f2= "+f2+" t= "+t+" j = "+j);
+//                    // System.out.println("\u001B[32m"+"f1= "+f1+" f2= "+f2+" t= "+t+" j = "+j);
                 temp_direction_laser[t][j] = 1;
                 count[2] += 1;
             }
             else if (temp_direction_laser[t][j] < 0) {
-//                    System.out.println("\u001B[34m"+"f1= "+f1+" f2= "+f2+" t= "+t+" j = "+j);
+//                    // System.out.println("\u001B[34m"+"f1= "+f1+" f2= "+f2+" t= "+t+" j = "+j);
                 temp_direction_laser[t][j] = -1;
                 count[0] += 1;
             }
@@ -147,12 +148,12 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
             }
         }
 
-//            System.out.println("\u001B[32m"+"count= "+Arrays.toString(count));
+//            // System.out.println("\u001B[32m"+"count= "+Arrays.toString(count));
 
 
         for (int j = 0; j < laserData1.size(); j++) {
             temp_direction_laser[t][j] = laserData1.size()/ count[1+(int)temp_direction_laser[t][j]];
-//                System.out.println("\u001B[32m"+"temp direc laser j "+temp_direction_laser[t][j]+" t "+t+" j "+j);
+//                // System.out.println("\u001B[32m"+"temp direc laser j "+temp_direction_laser[t][j]+" t "+t+" j "+j);
         }
 
         //Calculating the function for the sonar
@@ -179,26 +180,26 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
             f1 = sonarData1.sonar_readings.get(j);
             f2 = sonarData2.sonar_readings.get(j);
 
-//                System.out.println("sonar data det state 1 = "+sonarData1.detect_state.get(j));
-//                System.out.println("sonar data det state 2 = "+sonarData2.detect_state.get(j));
+//                // System.out.println("sonar data det state 1 = "+sonarData1.detect_state.get(j));
+//                // System.out.println("sonar data det state 2 = "+sonarData2.detect_state.get(j));
 
             if(sonarData1.detect_state.get(j) == true && 
                     sonarData2.detect_state.get(j) == true){
                 temp_direction_sonar[t][j] = f2-f1;
                 temp_direction_sonar[t][j] /= dt;
 
-//                    System.out.println("f 2 = "+f2+" f 1 = "+f1);
+//                    // System.out.println("f 2 = "+f2+" f 1 = "+f1);
 
 
                 if (temp_direction_sonar[t][j] > 0) {
-//                        System.out.println("\u001B[32m"+"TO NO IF 1 "+temp_direction_sonar[t][j]+" T "+t+" J "+j);
-//                        System.out.println("f 2 = "+f2+" f 1 = "+f1);
+//                        // System.out.println("\u001B[32m"+"TO NO IF 1 "+temp_direction_sonar[t][j]+" T "+t+" J "+j);
+//                        // System.out.println("f 2 = "+f2+" f 1 = "+f1);
                     temp_direction_sonar[t][j] = 1;
                     count[2] += 1;
                 }
                 else if (temp_direction_sonar[t][j] < 0) {
-//                        System.out.println("\u001B[31m"+"TO NO IF 2 "+temp_direction_sonar[t][j]+" T "+t+" J "+j);
-//                    System.out.println("f 2 = "+f2+" f 1 = "+f1);
+//                        // System.out.println("\u001B[31m"+"TO NO IF 2 "+temp_direction_sonar[t][j]+" T "+t+" J "+j);
+//                    // System.out.println("f 2 = "+f2+" f 1 = "+f1);
                     temp_direction_sonar[t][j] = -1;
                     count[0] += 1;
                 }
@@ -213,11 +214,11 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
             }
         }
 
-//            System.out.println("\u001B[31m"+"count= "+Arrays.toString(count));
+//            // System.out.println("\u001B[31m"+"count= "+Arrays.toString(count));
 
         for (int j = 0; j < sonarData1.sonar_readings.size(); j++) {
             temp_direction_sonar[t][j] = sonarData1.sonar_readings.size()/ count[1+(int)temp_direction_sonar[t][j]];
-//                System.out.println("\u001B[31m"+"temp direc sonar j "+temp_direction_sonar[t][j]+" t "+t+" j "+j);
+//                // System.out.println("\u001B[31m"+"temp direc sonar j "+temp_direction_sonar[t][j]+" t "+t+" j "+j);
         }
 
         //Composing functions 
@@ -257,7 +258,8 @@ public class DirectionFeatMapCodelet extends FeatMapCodelet{
 
         for (int j = 0; j < sonardimension; j++) {
             directionFM_t.set(j, max_array[j]);
-//                System.out.println("\u001B[31m"+"direct fm "+directionFM_t.get(j)+" t="+t+" j="+j);
+//        	 directionFM_t.set(j, 1f);
+//                // System.out.println("\u001B[31m"+"direct fm "+directionFM_t.get(j)+" t="+t+" j="+j);
         }
         
         printToFile(directionFM_t);
